@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getPresignedUrl } from '@/lib/s3'
 
 export async function GET() {
   try {
@@ -8,19 +7,8 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     })
 
-    // Sign URLs dynamically so they load securely in viewer/previews
-    const docsWithPresignedUrls = await Promise.all(
-      documents.map(async (doc) => {
-        try {
-          const signedUrl = await getPresignedUrl(doc.s3Bucket, doc.s3Key)
-          return { ...doc, s3Url: signedUrl }
-        } catch {
-          return doc
-        }
-      })
-    )
-
-    return NextResponse.json(docsWithPresignedUrls)
+    // Cloudinary URLs are already permanent, no need for presigned URLs
+    return NextResponse.json(documents)
   } catch (error) {
     console.error('[documents GET]', error)
     return NextResponse.json({ error: 'Failed to fetch documents' }, { status: 500 })
