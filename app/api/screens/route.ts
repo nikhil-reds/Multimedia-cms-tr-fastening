@@ -5,6 +5,12 @@ export async function GET() {
   try {
     const screens = await prisma.screen.findMany({
       orderBy: { createdAt: 'asc' },
+      include: {
+        assets: {
+          orderBy: { position: 'asc' },
+          include: { document: true },
+        },
+      },
     })
     return NextResponse.json(screens)
   } catch (error) {
