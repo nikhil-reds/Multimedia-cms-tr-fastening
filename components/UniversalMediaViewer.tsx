@@ -917,7 +917,7 @@ function DocViewer({ src, name, mimeType }: { src: string; name: string; mimeTyp
           <div className="text-indigo-400 font-semibold text-xs tracking-wider uppercase">Slide 1: Overview</div>
           <div className="my-auto space-y-4">
             <h2 className="text-3xl font-extrabold text-white leading-tight">
-              Rubenius Playlists <br />
+              Rubenius Media <br />
               <span className="text-indigo-400">&amp; Screen Delivery</span>
             </h2>
             <p className="text-xs text-indigo-200/70 max-w-md">
