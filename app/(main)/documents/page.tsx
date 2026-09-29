@@ -17,7 +17,8 @@ import {
   HardDrive,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Globe2
 } from 'lucide-react'
 import { FileIcon, iconBg, formatBytes, formatDate } from '@/components/main-screen/shared'
 import { Button } from '@/components/ui/button'
@@ -46,6 +47,8 @@ type Document = {
   mimeType: string
   s3Url: string
   cloudinaryUrl?: string | null
+  websiteUrl?: string | null
+  sourceType?: 'FILE' | 'WEBSITE'
   size: number
   status: string
   createdAt: string
@@ -53,8 +56,24 @@ type Document = {
 }
 
 function AssetPreview({ doc, large = false }: { doc: Document; large?: boolean }) {
-  const previewUrl = doc.s3Url || doc.cloudinaryUrl || ''
+  const previewUrl = doc.websiteUrl || doc.s3Url || doc.cloudinaryUrl || ''
   const previewClass = large ? 'h-[420px] w-full' : 'w-full h-full'
+
+  if (doc.sourceType === 'WEBSITE' || doc.websiteUrl) {
+    return (
+      <div className={`${previewClass} flex flex-col items-center justify-center gap-3 bg-zinc-50 px-6 text-center`}>
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-zinc-200">
+          <Globe2 className="h-7 w-7 text-zinc-700" />
+        </div>
+        {large ? (
+          <div className="max-w-lg">
+            <p className="text-sm font-bold text-zinc-900">{doc.name}</p>
+            <p className="mt-1 break-all text-xs text-zinc-500">{previewUrl}</p>
+          </div>
+        ) : null}
+      </div>
+    )
+  }
 
   if (!previewUrl) {
     return (
@@ -126,6 +145,8 @@ export default function DocumentsDashboard() {
 
   // Upload state
   const [uploadFiles, setUploadFiles] = useState<{ id: string; file: File }[]>([])
+  const [websiteUrl, setWebsiteUrl] = useState('')
+  const [websiteName, setWebsiteName] = useState('')
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -140,7 +161,7 @@ export default function DocumentsDashboard() {
         const normalized = Array.isArray(data)
           ? data.map((doc) => ({
               ...doc,
-              s3Url: doc.s3Url || doc.cloudinaryUrl || '',
+              s3Url: doc.s3Url || doc.cloudinaryUrl || doc.websiteUrl || '',
             }))
           : []
         setDocuments(normalized)
@@ -159,6 +180,7 @@ export default function DocumentsDashboard() {
   // Statistics Calculation
   const totalDocs = documents.length
   const totalSize = documents.reduce((acc, doc) => acc + doc.size, 0)
+  const websiteCount = documents.filter((d) => d.sourceType === 'WEBSITE' || d.websiteUrl).length
   const pendingCount = documents.filter((d) => d.status === 'PENDING').length
   const uploadingCount = documents.filter((d) => d.status === 'UPLOADING' || d.status === 'PROCESSING').length
   const completedCount = documents.filter((d) => d.status === 'UPLOADED' || d.status === 'COMPLETED').length
@@ -192,6 +214,7 @@ export default function DocumentsDashboard() {
         else if (typeFilter === 'IMAGE') matchesType = mime.startsWith('image/')
         else if (typeFilter === 'VIDEO') matchesType = mime.startsWith('video/')
         else if (typeFilter === 'AUDIO') matchesType = mime.startsWith('audio/')
+        else if (typeFilter === 'WEBSITE') matchesType = doc.sourceType === 'WEBSITE' || Boolean(doc.websiteUrl)
         else if (typeFilter === 'DOCUMENTS') matchesType = mime.startsWith('text/') || mime.includes('word') || mime.includes('spreadsheet') || mime.includes('presentation')
       }
 
@@ -220,39 +243,60 @@ export default function DocumentsDashboard() {
   }
 
   const handleUploadSubmit = async () => {
-    if (uploadFiles.length === 0 || isUploading) return
+    const trimmedUrl = websiteUrl.trim()
+    if ((uploadFiles.length === 0 && !trimmedUrl) || isUploading) return
     setIsUploading(true)
     setUploadProgress(0)
 
-    const formData = new FormData()
-    uploadFiles.forEach(({ file }) => formData.append('files', file))
-
     try {
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest()
-        xhr.upload.onprogress = (e) => {
-          if (e.lengthComputable) {
-            setUploadProgress(Math.round((e.loaded / e.total) * 100))
-          }
-        }
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve()
-          } else {
-            reject(new Error('Upload failed'))
-          }
-        }
-        xhr.onerror = () => reject(new Error('Network error'))
-        xhr.open('POST', '/api/upload')
-        xhr.send(formData)
-      })
+      if (uploadFiles.length > 0) {
+        const formData = new FormData()
+        uploadFiles.forEach(({ file }) => formData.append('files', file))
 
-      toast.success('Documents uploaded successfully')
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest()
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              setUploadProgress(Math.round((e.loaded / e.total) * 100))
+            }
+          }
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve()
+            } else {
+              reject(new Error('Upload failed'))
+            }
+          }
+          xhr.onerror = () => reject(new Error('Network error'))
+          xhr.open('POST', '/api/upload')
+          xhr.send(formData)
+        })
+      }
+
+      if (trimmedUrl) {
+        const res = await fetch('/api/documents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: trimmedUrl,
+            name: websiteName.trim() || undefined,
+          }),
+        })
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => null)
+          throw new Error(data?.error || 'Failed to save website URL')
+        }
+      }
+
+      toast.success(trimmedUrl && uploadFiles.length === 0 ? 'Website URL saved successfully' : 'Assets saved successfully')
       setIsUploadOpen(false)
       setUploadFiles([])
+      setWebsiteUrl('')
+      setWebsiteName('')
       loadDocs()
-    } catch {
-      toast.error('Upload failed')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Upload failed')
     } finally {
       setIsUploading(false)
     }
@@ -303,7 +347,7 @@ export default function DocumentsDashboard() {
     selectedIds.forEach((id) => {
       const doc = documents.find((d) => d.id === id)
       if (doc) {
-        window.open(doc.s3Url, '_blank')
+        window.open(doc.websiteUrl || doc.s3Url, '_blank')
       }
     })
     toast.success(`Triggered download for ${selectedIds.length} files`)
@@ -361,7 +405,7 @@ export default function DocumentsDashboard() {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-100 pb-6 shrink-0">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Documents</h1>
-          <p className="text-xs text-zinc-500 mt-1">Manage and review all uploaded files securely.</p>
+          <p className="text-xs text-zinc-500 mt-1">Manage and review stored files and website assets securely.</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -401,6 +445,7 @@ export default function DocumentsDashboard() {
             <option value="IMAGE">Images</option>
             <option value="VIDEO">Videos</option>
             <option value="AUDIO">Audio</option>
+            <option value="WEBSITE">Websites</option>
             <option value="DOCUMENTS">Documents</option>
           </select>
 
@@ -420,7 +465,7 @@ export default function DocumentsDashboard() {
           <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
             <DialogTrigger asChild>
               <Button className="bg-black hover:bg-zinc-900 text-white font-semibold text-xs py-2 px-4 rounded-xl shadow-md cursor-pointer flex items-center gap-1.5">
-                <Upload className="w-3.5 h-3.5" /> Upload Document
+                <Upload className="w-3.5 h-3.5" /> Add to Storage
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl sm:max-w-4xl rounded-2xl bg-white p-0 overflow-hidden shadow-2xl">
@@ -429,9 +474,9 @@ export default function DocumentsDashboard() {
                 <div className="md:col-span-5 bg-zinc-50 p-6 border-r border-zinc-100 flex flex-col justify-between">
                   <div className="space-y-5">
                     <div>
-                      <DialogTitle className="text-lg font-bold text-zinc-900">Upload Documents</DialogTitle>
+                      <DialogTitle className="text-lg font-bold text-zinc-900">Storage</DialogTitle>
                       <DialogDescription className="text-xs text-zinc-500 mt-1">
-                        Select multiple files to import into your workspace catalog.
+                        Select files or save a website link into your workspace catalog.
                       </DialogDescription>
                     </div>
 
@@ -441,7 +486,7 @@ export default function DocumentsDashboard() {
                           Feature Highlight
                         </span>
                         <p className="text-[11px] font-medium text-zinc-700 leading-normal">
-                          ⚡ You can drag &amp; drop or select <strong className="text-black">multiple files</strong> at a time for concurrent uploading.
+                          You can drag &amp; drop files or save a website link as a storage asset.
                         </p>
                       </div>
 
@@ -475,24 +520,48 @@ export default function DocumentsDashboard() {
                               <strong className="text-zinc-900">Audio:</strong> MP3, WAV, AAC, M4A, OGG
                             </p>
                           </div>
+                          <div className="flex items-start gap-2">
+                            <span className="text-zinc-500 font-bold shrink-0">•</span>
+                            <p className="text-zinc-650 leading-relaxed">
+                              <strong className="text-zinc-900">Websites:</strong> HTTP and HTTPS links
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <div className="text-[10px] text-zinc-400 border-t border-zinc-200/60 pt-4 mt-6">
-                    Uploaded assets will be cataloged instantly.
+                    Stored files and website links will be cataloged instantly.
                   </div>
                 </div>
 
-                {/* Right panel: Upload Dropzone & Items (Col Span 7) */}
+                {/* Right panel: Storage workspace (Col Span 7) */}
                 <div className="md:col-span-7 p-6 flex flex-col justify-between min-h-[400px]">
                   <div className="space-y-4">
                     <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">
                       Dropzone Workspace
                     </span>
 
-                    {/* Upload Drop Zone */}
+                    <div className="space-y-2 rounded-xl border border-zinc-150 bg-zinc-50/50 p-3">
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                        Website URL
+                      </label>
+                      <input
+                        value={websiteUrl}
+                        onChange={(e) => setWebsiteUrl(e.target.value)}
+                        placeholder="https://example.com"
+                        className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-xs text-zinc-800 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-black"
+                      />
+                      <input
+                        value={websiteName}
+                        onChange={(e) => setWebsiteName(e.target.value)}
+                        placeholder="Optional display name"
+                        className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-xs text-zinc-800 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-black"
+                      />
+                    </div>
+
+                    {/* Storage Drop Zone */}
                     <div
                       onDragOver={(e) => {
                         e.preventDefault()
@@ -563,7 +632,7 @@ export default function DocumentsDashboard() {
                     {isUploading && (
                       <div className="flex flex-col gap-1.5 p-3 bg-zinc-50 rounded-xl border border-zinc-150">
                         <div className="flex justify-between text-[10px] text-zinc-500 font-semibold leading-none">
-                          <span>Uploading files to storage...</span>
+                          <span>Saving assets to storage...</span>
                           <span className="font-mono">{uploadProgress}%</span>
                         </div>
                         <div className="w-full h-1.5 bg-zinc-200 rounded-full overflow-hidden">
@@ -582,6 +651,8 @@ export default function DocumentsDashboard() {
                       onClick={() => {
                         setIsUploadOpen(false)
                         setUploadFiles([])
+                        setWebsiteUrl('')
+                        setWebsiteName('')
                       }}
                       className="cursor-pointer text-xs"
                       disabled={isUploading}
@@ -591,9 +662,9 @@ export default function DocumentsDashboard() {
                     <Button
                       onClick={handleUploadSubmit}
                       className="bg-black hover:bg-zinc-900 text-white font-semibold text-xs px-5 py-2 rounded-xl cursor-pointer disabled:opacity-40"
-                      disabled={uploadFiles.length === 0 || isUploading}
+                      disabled={(uploadFiles.length === 0 && websiteUrl.trim().length === 0) || isUploading}
                     >
-                      {isUploading ? 'Processing...' : `Upload ${uploadFiles.length > 0 ? `(${uploadFiles.length})` : ''}`}
+                      {isUploading ? 'Processing...' : `Save ${uploadFiles.length > 0 ? `(${uploadFiles.length})` : ''}`}
                     </Button>
                   </DialogFooter>
                 </div>
@@ -654,10 +725,11 @@ export default function DocumentsDashboard() {
             <span className="text-[10px] font-bold uppercase tracking-wider">Formats Split</span>
             <SlidersHorizontal className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="grid grid-cols-3 gap-1.5 text-[9px] font-bold text-zinc-650 mt-1">
+          <div className="grid grid-cols-4 gap-1.5 text-[9px] font-bold text-zinc-650 mt-1">
             <span className="bg-zinc-50 p-1 rounded text-center">PDF: {documents.filter(d => d.name.toLowerCase().endsWith('.pdf')).length}</span>
             <span className="bg-zinc-50 p-1 rounded text-center">IMG: {documents.filter(d => d.mimeType.startsWith('image/')).length}</span>
             <span className="bg-zinc-50 p-1 rounded text-center">VID: {documents.filter(d => d.mimeType.startsWith('video/')).length}</span>
+            <span className="bg-zinc-50 p-1 rounded text-center">WEB: {websiteCount}</span>
           </div>
         </div>
 
@@ -668,7 +740,7 @@ export default function DocumentsDashboard() {
             <Clock className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
           </div>
           <h3 className="text-2xl font-extrabold text-zinc-900 leading-none">{recentCount}</h3>
-          <p className="text-[10px] text-zinc-400">Files added in the last 24 hours</p>
+          <p className="text-[10px] text-zinc-400">Assets added in the last 24 hours</p>
         </div>
       </section>
 
@@ -747,13 +819,13 @@ export default function DocumentsDashboard() {
             </div>
             <h3 className="text-sm font-bold text-zinc-800">No documents found</h3>
             <p className="text-xs text-zinc-400 max-w-xs mt-1 leading-relaxed">
-              No files matched your filters or search. Try uploading new documents or resetting filters.
+              No assets matched your filters or search. Try adding files or website links.
             </p>
             <Button
               onClick={() => setIsUploadOpen(true)}
               className="mt-6 bg-black hover:bg-zinc-900 text-white font-semibold text-xs py-2 px-5 rounded-xl cursor-pointer"
             >
-              Upload First File
+              Add First Asset
             </Button>
           </div>
         ) : (
@@ -809,10 +881,10 @@ export default function DocumentsDashboard() {
                           </div>
                         </TableCell>
                         <TableCell className="p-4 text-[10px] font-mono text-zinc-400 uppercase">
-                          {doc.mimeType.split('/')[1] || doc.mimeType}
+                          {doc.sourceType === 'WEBSITE' || doc.websiteUrl ? 'website' : doc.mimeType.split('/')[1] || doc.mimeType}
                         </TableCell>
                         <TableCell className="p-4 text-xs font-medium text-zinc-600">
-                          {formatBytes(doc.size)}
+                          {doc.sourceType === 'WEBSITE' || doc.websiteUrl ? 'External' : formatBytes(doc.size)}
                         </TableCell>
                         <TableCell className="p-4">{getStatusBadge(doc.status)}</TableCell>
                         <TableCell className="p-4 text-xs text-zinc-500">
@@ -953,11 +1025,34 @@ export default function DocumentsDashboard() {
                 <div className="mt-6 space-y-4 border-t border-zinc-100 pt-6 text-xs">
                   <div className="grid grid-cols-3 gap-3">
                     <span className="font-medium text-zinc-400">File Type</span>
-                    <span className="col-span-2 break-all font-mono font-semibold uppercase text-zinc-800">{selectedDetailDoc.mimeType}</span>
+                    <span className="col-span-2 break-all font-mono font-semibold uppercase text-zinc-800">
+                      {selectedDetailDoc.sourceType === 'WEBSITE' || selectedDetailDoc.websiteUrl ? 'Website URL' : selectedDetailDoc.mimeType}
+                    </span>
+                  </div>
+                  {(selectedDetailDoc.sourceType === 'WEBSITE' || selectedDetailDoc.websiteUrl) ? (
+                    <div className="grid grid-cols-3 gap-3">
+                      <span className="font-medium text-zinc-400">Website URL</span>
+                      <a
+                        href={selectedDetailDoc.websiteUrl || selectedDetailDoc.s3Url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="col-span-2 break-all font-semibold text-zinc-900 underline underline-offset-4"
+                      >
+                        {selectedDetailDoc.websiteUrl || selectedDetailDoc.s3Url}
+                      </a>
+                    </div>
+                  ) : null}
+                  <div className="grid grid-cols-3 gap-3">
+                    <span className="font-medium text-zinc-400">Source</span>
+                    <span className="col-span-2 font-semibold text-zinc-800">
+                      {selectedDetailDoc.sourceType === 'WEBSITE' || selectedDetailDoc.websiteUrl ? 'Website Link' : 'Uploaded File'}
+                    </span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <span className="font-medium text-zinc-400">File Size</span>
-                    <span className="col-span-2 font-semibold text-zinc-800">{formatBytes(selectedDetailDoc.size)}</span>
+                    <span className="col-span-2 font-semibold text-zinc-800">
+                      {selectedDetailDoc.sourceType === 'WEBSITE' || selectedDetailDoc.websiteUrl ? 'External' : formatBytes(selectedDetailDoc.size)}
+                    </span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <span className="font-medium text-zinc-400">Status</span>
@@ -984,28 +1079,31 @@ export default function DocumentsDashboard() {
                   <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Asset Info</h4>
                   <div className="space-y-2 rounded-xl border border-zinc-100 bg-zinc-50 p-3 text-[11px] leading-relaxed text-zinc-600">
                     <p>Category: Media Asset</p>
-                    <p>Storage URL: {selectedDetailDoc.s3Url ? 'Available' : 'Unavailable'}</p>
+                    <p>Asset URL: {selectedDetailDoc.websiteUrl || selectedDetailDoc.s3Url ? 'Available' : 'Unavailable'}</p>
                     <p>Content status: {selectedDetailDoc.status}</p>
                   </div>
                 </div>
 
                 <div className="mt-auto flex flex-col gap-2.5 border-t border-zinc-100 pt-6">
                   <a
-                    href={selectedDetailDoc.s3Url || '#'}
-                    download={selectedDetailDoc.name}
+                    href={selectedDetailDoc.websiteUrl || selectedDetailDoc.s3Url || '#'}
+                    download={selectedDetailDoc.websiteUrl ? undefined : selectedDetailDoc.name}
                     onClick={(event) => {
-                      if (!selectedDetailDoc.s3Url) event.preventDefault()
+                      if (!selectedDetailDoc.websiteUrl && !selectedDetailDoc.s3Url) event.preventDefault()
                     }}
+                    target={selectedDetailDoc.websiteUrl ? '_blank' : undefined}
+                    rel={selectedDetailDoc.websiteUrl ? 'noopener noreferrer' : undefined}
                     className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-black py-2.5 text-xs font-semibold text-white shadow-md transition-all hover:bg-zinc-900"
                   >
-                    <Download className="h-4 w-4" /> Download Original File
+                    {selectedDetailDoc.websiteUrl ? <Globe2 className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                    {selectedDetailDoc.websiteUrl ? 'Open Website' : 'Download Original File'}
                   </a>
                   <Button
                     variant="outline"
-                    onClick={() => window.open(`/view/${selectedDetailDoc.id}`, '_blank')}
+                    onClick={() => window.open(selectedDetailDoc.websiteUrl || `/view/${selectedDetailDoc.id}`, '_blank')}
                     className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs"
                   >
-                    <Eye className="h-4 w-4" /> Open Full Screen
+                    <Eye className="h-4 w-4" /> {selectedDetailDoc.websiteUrl ? 'Open Website Tab' : 'Open Full Screen'}
                   </Button>
                 </div>
               </div>

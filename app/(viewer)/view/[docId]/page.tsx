@@ -6,10 +6,10 @@ import UniversalMediaViewer from '@/components/UniversalMediaViewer'
 async function fetchDoc(id: string) {
   const doc = await prisma.document.findUnique({
     where: { id },
-    select: { id: true, name: true, mimeType: true, cloudinaryUrl: true },
+    select: { id: true, name: true, mimeType: true, cloudinaryUrl: true, websiteUrl: true },
   })
   if (!doc) return null
-  return { id: doc.id, name: doc.name, mimeType: doc.mimeType, s3Url: doc.cloudinaryUrl }
+  return { id: doc.id, name: doc.name, mimeType: doc.mimeType, s3Url: doc.cloudinaryUrl || doc.websiteUrl || '' }
 }
 
 export default async function ViewerPage({
