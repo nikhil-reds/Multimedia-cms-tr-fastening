@@ -9,18 +9,6 @@ export async function GET(
     const { screenId } = await params
     const screen = await prisma.screen.findUnique({
       where: { id: screenId },
-      include: {
-        playlist: {
-          include: {
-            items: {
-              orderBy: { order: 'asc' },
-              include: {
-                document: true,
-              },
-            },
-          },
-        },
-      },
     })
 
     if (!screen) {
@@ -41,31 +29,14 @@ export async function PATCH(
   try {
     const { screenId } = await params
     const body = await request.json()
-    const { playlistId, name } = body as { playlistId?: string | null; name?: string }
+    const { name } = body as { name?: string }
 
-    const data: any = {}
-    if (name !== undefined) {
-      data.name = name
-    }
-    if (playlistId !== undefined) {
-      data.playlistId = playlistId
-    }
+    const data: { name?: string } = {}
+    if (name !== undefined) data.name = name
 
     const updated = await prisma.screen.update({
       where: { id: screenId },
       data,
-      include: {
-        playlist: {
-          include: {
-            items: {
-              orderBy: { order: 'asc' },
-              include: {
-                document: true,
-              },
-            },
-          },
-        },
-      },
     })
 
     return NextResponse.json(updated)
