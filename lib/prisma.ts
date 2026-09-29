@@ -1,10 +1,18 @@
 import { PrismaClient } from '../app/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 
-const globalForPrisma = global as unknown as { prisma: InstanceType<typeof PrismaClient> }
+const globalForPrisma = global as unknown as {
+  prisma?: InstanceType<typeof PrismaClient>
+  prismaSchemaVersion?: string
+}
 
-if (globalForPrisma.prisma && !('screen' in globalForPrisma.prisma)) {
-  // If the cached global client is outdated and lacks the screen model, delete it to force recreation.
+const PRISMA_SCHEMA_VERSION = '20260929103000_one_asset_per_screen'
+
+if (
+  globalForPrisma.prisma &&
+  globalForPrisma.prismaSchemaVersion !== PRISMA_SCHEMA_VERSION
+) {
+  // Force a fresh client after schema changes during Next.js dev hot reload.
   delete (globalForPrisma as any).prisma
 }
 
@@ -17,4 +25,5 @@ export const prisma = globalForPrisma.prisma ?? createClient()
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma
+  globalForPrisma.prismaSchemaVersion = PRISMA_SCHEMA_VERSION
 }
