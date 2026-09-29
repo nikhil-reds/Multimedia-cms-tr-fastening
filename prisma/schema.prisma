@@ -26,6 +26,11 @@ enum DocumentStatus {
   FAILED
 }
 
+enum DocumentSourceType {
+  FILE
+  WEBSITE
+}
+
 // ─── Models ──────────────────────────────────────────────────────────────────
 
 model Session {
@@ -41,20 +46,26 @@ model Document {
   id        String         @id @default(cuid())
   sessionId String
 
-  // original file metadata
+  // original asset metadata
   name      String
   size      Int
   mimeType  String
 
-  // Cloudinary location
-  cloudinaryUrl      String
-  cloudinaryPublicId String
+  sourceType DocumentSourceType @default(FILE)
+
+  // Cloudinary location for uploaded files
+  cloudinaryUrl      String?
+  cloudinaryPublicId String?
+
+  // External website asset location
+  websiteUrl String?
 
   status    DocumentStatus @default(PENDING)
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
 
   session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  screenAssets ScreenAsset[]
 }
 
 model Screen {
@@ -62,5 +73,22 @@ model Screen {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  assets ScreenAsset[]
+}
+
+model ScreenAsset {
+  id         String   @id @default(cuid())
+  screenId   String
+  documentId String
+  position   Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  screen   Screen   @relation(fields: [screenId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([screenId])
+  @@index([documentId])
 }
 
