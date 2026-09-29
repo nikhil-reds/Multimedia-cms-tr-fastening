@@ -46,53 +46,21 @@ model Document {
   size      Int
   mimeType  String
 
-  // S3 location
-  s3Bucket  String
-  s3Key     String
-  s3Url     String
+  // Cloudinary location
+  cloudinaryUrl      String
+  cloudinaryPublicId String
 
   status    DocumentStatus @default(PENDING)
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
 
-  session       Session        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  playlistItems PlaylistItem[]
-}
-
-model Playlist {
-  id            String         @id @default(cuid())
-  name          String
-  loopCount     Int            @default(1)
-  loopUnlimited Boolean        @default(true)
-  s3Bucket      String
-  s3Key         String
-  s3Url         String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-
-  items     PlaylistItem[]
-  screens   Screen[]
-}
-
-model PlaylistItem {
-  id         String   @id @default(cuid())
-  playlistId String
-  documentId String
-  order      Int
-
-  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-
-  @@unique([playlistId, order])
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
 model Screen {
-  id         String    @id @default(cuid())
-  name       String
-  playlistId String?
-  playlist   Playlist? @relation(fields: [playlistId], references: [id], onDelete: SetNull)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
-
 
