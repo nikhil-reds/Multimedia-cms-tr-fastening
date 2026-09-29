@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Clock, Info, Monitor, PlusCircle, Search, Trash2 } from 'lucide-react'
+import { Clock, ExternalLink, Info, Monitor, PlusCircle, Search, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -31,11 +31,23 @@ import {
 } from '@/components/ui/sheet'
 import { formatDate } from '@/components/main-screen/shared'
 
+type AssignedAsset = {
+  id: string
+  document: {
+    id: string
+    name: string
+    mimeType: string
+    sourceType?: 'FILE' | 'WEBSITE'
+    websiteUrl?: string | null
+  }
+}
+
 type Screen = {
   id: string
   name: string
   createdAt: string
   updatedAt: string
+  assets?: AssignedAsset[]
 }
 
 export default function ScreensDashboard() {
@@ -271,6 +283,7 @@ export default function ScreensDashboard() {
                   />
                 </TableHead>
                 <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Screen Name</TableHead>
+                <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Assigned Asset</TableHead>
                 <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Created Date</TableHead>
                 <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4 text-right">Actions</TableHead>
               </TableRow>
@@ -278,6 +291,7 @@ export default function ScreensDashboard() {
             <TableBody>
               {filteredScreens.map((screen) => {
                 const isSelected = selectedIds.includes(screen.id)
+                const assignedAsset = screen.assets?.[0]?.document
                 return (
                   <TableRow key={screen.id} className={isSelected ? 'bg-zinc-50/80' : ''}>
                     <TableCell className="text-center">
@@ -294,6 +308,20 @@ export default function ScreensDashboard() {
                         <span>{screen.name}</span>
                       </div>
                     </TableCell>
+                    <TableCell className="p-4 text-xs">
+                      {assignedAsset ? (
+                        <div className="flex min-w-0 flex-col gap-1">
+                          <span className="max-w-[260px] truncate font-semibold text-zinc-800" title={assignedAsset.name}>
+                            {assignedAsset.name}
+                          </span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                            {assignedAsset.sourceType === 'WEBSITE' || assignedAsset.websiteUrl ? 'Website' : assignedAsset.mimeType}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-xs font-medium text-zinc-400">Nothing</span>
+                      )}
+                    </TableCell>
                     <TableCell className="p-4 text-xs text-zinc-500">{formatDate(screen.createdAt)}</TableCell>
                     <TableCell className="p-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
@@ -301,8 +329,17 @@ export default function ScreensDashboard() {
                           onClick={() => setSelectedDetailScreen(screen)}
                           className="p-2 text-zinc-500 hover:text-black hover:bg-zinc-100 rounded-lg transition-all cursor-pointer"
                           aria-label={`View ${screen.name}`}
+                          title="Screen info"
                         >
                           <Info className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => window.open(`/view/screen/${screen.id}`, '_blank', 'noopener,noreferrer')}
+                          className="p-2 text-zinc-500 hover:text-black hover:bg-zinc-100 rounded-lg transition-all cursor-pointer"
+                          aria-label={`Open ${screen.name}`}
+                          title="Open screen URL"
+                        >
+                          <ExternalLink className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeleteConfirmId(screen.id)}
