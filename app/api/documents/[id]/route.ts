@@ -8,10 +8,16 @@ export async function GET(
   const { id } = await params
   const doc = await prisma.document.findUnique({
     where: { id },
-    select: { id: true, name: true, mimeType: true, s3Url: true, status: true },
+    select: { id: true, name: true, mimeType: true, cloudinaryUrl: true, status: true },
   })
   if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json(doc)
+  return NextResponse.json({
+    id: doc.id,
+    name: doc.name,
+    mimeType: doc.mimeType,
+    s3Url: doc.cloudinaryUrl,
+    status: doc.status,
+  })
 }
 
 export async function DELETE(
