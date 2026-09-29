@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { uploadBuffer } from '@/lib/s3'
+import { uploadFile } from '@/lib/cloudinary'
 
 export async function POST(request: NextRequest) {
   let formData: FormData
@@ -17,8 +17,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No files provided' }, { status: 400 })
   }
 
-  const bucketName = process.env.BUCKET_NAME!
-
   const session = await prisma.session.create({
     data: { status: 'UPLOADING' },
   })
@@ -26,11 +24,13 @@ export async function POST(request: NextRequest) {
   try {
     for (const file of validFiles) {
       const buffer = Buffer.from(await file.arrayBuffer())
-      const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-      const key = `sessions/${session.id}/${Date.now()}-${safeFileName}`
       const mimeType = file.type || 'application/octet-stream'
 
-      const s3Url = await uploadBuffer(buffer, bucketName, key, mimeType)
+      const { url: cloudinaryUrl, publicId: cloudinaryPublicId } = await uploadFile(
+        buffer,
+        file.name,
+        mimeType
+      )
 
       await prisma.document.create({
         data: {
@@ -38,9 +38,8 @@ export async function POST(request: NextRequest) {
           name: file.name,
           size: file.size,
           mimeType,
-          s3Bucket: bucketName,
-          s3Key: key,
-          s3Url,
+          cloudinaryUrl,
+          cloudinaryPublicId,
           status: 'UPLOADED',
         },
       })
