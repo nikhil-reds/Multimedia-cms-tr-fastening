@@ -1,17 +1,15 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-import { getPresignedUrl } from '@/lib/s3'
 import CloseButton from './CloseButton'
 import UniversalMediaViewer from '@/components/UniversalMediaViewer'
 
 async function fetchDoc(id: string) {
   const doc = await prisma.document.findUnique({
     where: { id },
-    select: { id: true, name: true, mimeType: true, s3Bucket: true, s3Key: true },
+    select: { id: true, name: true, mimeType: true, cloudinaryUrl: true },
   })
   if (!doc) return null
-  const signedUrl = await getPresignedUrl(doc.s3Bucket, doc.s3Key)
-  return { id: doc.id, name: doc.name, mimeType: doc.mimeType, s3Url: signedUrl }
+  return { id: doc.id, name: doc.name, mimeType: doc.mimeType, s3Url: doc.cloudinaryUrl }
 }
 
 export default async function ViewerPage({
