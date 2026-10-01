@@ -399,10 +399,11 @@ export default function DocumentsDashboard() {
     )
   }
 
+  // Background: white at the top, light sea blue in the middle, dark blue at the bottom.
   return (
-    <div className="bg-zinc-50/50 min-h-screen py-10 px-8 flex flex-col gap-8 antialiased">
+    <div className="bg-[linear-gradient(to_top,#0a1f5c_0%,#1d4ed8_22%,#5cc8e0_52%,#d6f4fa_78%,#ffffff_100%)] min-h-screen py-10 px-8 flex flex-col gap-8 antialiased">
       {/* 1. Page Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-100 pb-6 shrink-0">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-100 pb-6 shrink-0">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Documents</h1>
           <p className="text-xs text-zinc-500 mt-1">Manage and review stored files and website assets securely.</p>
@@ -677,7 +678,7 @@ export default function DocumentsDashboard() {
       {/* 2. Top Statistics Section */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 shrink-0">
         {/* Total Documents */}
-        <div className="bg-white border border-zinc-150 p-4 rounded-2xl flex flex-col gap-2.5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Total Documents</span>
             <LucideFileIcon className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
@@ -687,7 +688,7 @@ export default function DocumentsDashboard() {
         </div>
 
         {/* Storage Used */}
-        <div className="bg-white border border-zinc-150 p-4 rounded-2xl flex flex-col gap-2.5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Storage Used</span>
             <HardDrive className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
@@ -702,7 +703,7 @@ export default function DocumentsDashboard() {
         </div>
 
         {/* Processing Status */}
-        <div className="bg-white border border-zinc-150 p-4 rounded-2xl flex flex-col gap-2.5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Process Status</span>
             <CheckCircle className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
@@ -720,7 +721,7 @@ export default function DocumentsDashboard() {
         </div>
 
         {/* File Formats */}
-        <div className="bg-white border border-zinc-150 p-4 rounded-2xl flex flex-col gap-2 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Formats Split</span>
             <SlidersHorizontal className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
@@ -734,7 +735,7 @@ export default function DocumentsDashboard() {
         </div>
 
         {/* Recent Uploads */}
-        <div className="bg-white border border-zinc-150 p-4 rounded-2xl flex flex-col gap-2.5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Recent (24h)</span>
             <Clock className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
@@ -781,7 +782,7 @@ export default function DocumentsDashboard() {
       )}
 
       {/* 4. Table / Main List Workspace */}
-      <section className="flex-1 bg-white border border-zinc-150 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+      <section className="flex-1 bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 rounded-2xl shadow-lg overflow-hidden flex flex-col">
         {loading ? (
           <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
             <div className="space-y-4">
