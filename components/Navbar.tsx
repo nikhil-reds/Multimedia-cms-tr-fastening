@@ -10,7 +10,7 @@ export default function Navbar({ menuControl }: NavbarProps) {
       <div className="flex min-w-0 items-center gap-3">
         {menuControl}
         <div className="min-w-0">
-          <p className="truncate text-sm font-bold text-zinc-950">Rubenius Multimedia</p>
+          <p className="truncate text-sm font-bold text-zinc-950">TR Fastenings Multimedia</p>
           <p className="truncate text-xs font-medium text-zinc-500">
             Streaming media management
           </p>
