@@ -161,9 +161,10 @@ export default function ScreensDashboard() {
     )
   }
 
+  // Background: white at the top, light sea blue in the middle, dark blue at the bottom.
   return (
-    <div className="bg-zinc-50/50 min-h-screen py-10 px-8 flex flex-col gap-8 antialiased">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-100 pb-6 shrink-0">
+    <div className="bg-[linear-gradient(to_top,#0a1f5c_0%,#1d4ed8_22%,#5cc8e0_52%,#d6f4fa_78%,#ffffff_100%)] min-h-screen py-10 px-8 flex flex-col gap-8 antialiased">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-100 pb-6 shrink-0">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Screens</h1>
           <p className="text-xs text-zinc-500 mt-1">Register and monitor display endpoints.</p>
@@ -202,7 +203,7 @@ export default function ScreensDashboard() {
       </header>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 gap-5 shrink-0">
-        <div className="bg-white border border-zinc-150 p-4 rounded-2xl flex flex-col gap-2.5 shadow-sm">
+        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Total Screens</span>
             <Monitor className="w-4 h-4 text-zinc-500" />
@@ -211,7 +212,7 @@ export default function ScreensDashboard() {
           <p className="text-[10px] text-zinc-400">Registered displays</p>
         </div>
 
-        <div className="bg-white border border-zinc-150 p-4 rounded-2xl flex flex-col gap-2.5 shadow-sm">
+        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Recently Added</span>
             <Clock className="w-4 h-4 text-zinc-500" />
@@ -250,7 +251,7 @@ export default function ScreensDashboard() {
         </div>
       )}
 
-      <section className="flex-1 bg-white border border-zinc-150 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+      <section className="flex-1 bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 rounded-2xl shadow-lg overflow-hidden flex flex-col">
         {loading ? (
           <div className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, idx) => (
