@@ -1,0 +1,35 @@
+{
+  "name": "tr-fastenings-screen-player",
+  "productName": "TR Fastenings Screen Player",
+  "version": "1.0.0",
+  "description": "Full-screen kiosk player that shows the content assigned to a TR Fastenings Multimedia screen.",
+  "main": "main.js",
+  "private": true,
+  "author": "TR Fastenings",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.trfastenings.screenplayer",
+    "productName": "TR Fastenings Screen Player",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "overlay.html",
+      "build-config.json",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable",
+      "artifactName": "TRFasteningsScreenPlayer-${version}.exe"
+    }
+  }
+}
