@@ -60,7 +60,7 @@ export default function FilePanel() {
   }, [documents, searchTerm])
 
   return (
-    <aside className="w-80 shrink-0 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col overflow-hidden">
+    <aside className="w-80 shrink-0 rounded-2xl bg-white/85 backdrop-blur-md border border-white/70 shadow-lg shadow-blue-950/10 flex flex-col overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100 space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div>
