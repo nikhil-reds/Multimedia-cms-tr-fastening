@@ -53,7 +53,7 @@ function StatCard({
   icon: React.ElementType
 }) {
   return (
-    <div className="bg-white border border-zinc-150 p-4 rounded-2xl flex flex-col gap-2.5 shadow-sm min-h-30">
+    <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg min-h-30">
       <div className="flex items-center justify-between text-zinc-400">
         <span className="text-[10px] font-bold uppercase tracking-wider">{label}</span>
         <Icon className="w-4 h-4 text-zinc-500" />
@@ -109,9 +109,10 @@ export default function DashboardPage() {
   const latestSessions = sessions.slice(0, 5)
   const latestDocuments = documents.slice(0, 5)
 
+  // Background: white at the top, light sea blue in the middle, dark blue at the bottom.
   return (
-    <div className="min-h-screen bg-zinc-50/50 px-6 py-8 lg:px-8 flex flex-col gap-8">
-      <header className="flex flex-col gap-2 border-b border-zinc-100 pb-6">
+    <div className="min-h-screen bg-[linear-gradient(to_top,#0a1f5c_0%,#1d4ed8_22%,#5cc8e0_52%,#d6f4fa_78%,#ffffff_100%)] px-6 py-8 lg:px-8 flex flex-col gap-8">
+      <header className="flex flex-col gap-2 border-b border-sky-100 pb-6">
         <h1 className="text-2xl font-bold tracking-tight text-zinc-950">Dashboard</h1>
         <p className="text-sm text-zinc-500">Overview of sessions, uploaded documents, and registered screens.</p>
       </header>
@@ -133,7 +134,7 @@ export default function DashboardPage() {
           </section>
 
           <section className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-            <div className="bg-white border border-zinc-150 rounded-2xl shadow-sm p-5">
+            <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 rounded-2xl shadow-lg p-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Process Status</h2>
                 <CheckCircle className="w-4 h-4 text-zinc-500" />
@@ -154,7 +155,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="bg-white border border-zinc-150 rounded-2xl shadow-sm p-5">
+            <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 rounded-2xl shadow-lg p-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Formats Split</h2>
                 <ImageIcon className="w-4 h-4 text-zinc-500" />
@@ -175,7 +176,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="bg-white border border-zinc-150 rounded-2xl shadow-sm p-5">
+            <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 rounded-2xl shadow-lg p-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Quick Actions</h2>
                 <AlertCircle className="w-4 h-4 text-zinc-500" />
@@ -195,7 +196,7 @@ export default function DashboardPage() {
           </section>
 
           <section className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-            <div className="bg-white border border-zinc-150 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 rounded-2xl shadow-lg overflow-hidden">
               <div className="px-5 py-4 border-b border-zinc-100">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">All Sessions</h2>
               </div>
@@ -217,7 +218,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="bg-white border border-zinc-150 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 rounded-2xl shadow-lg overflow-hidden">
               <div className="px-5 py-4 border-b border-zinc-100">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Latest Documents</h2>
               </div>
@@ -242,7 +243,7 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          <section className="bg-white border border-zinc-150 rounded-2xl shadow-sm p-5">
+          <section className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 rounded-2xl shadow-lg p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">All Screen Cards</h2>
               <Monitor className="w-4 h-4 text-zinc-500" />
