@@ -4,10 +4,13 @@ import ScreenPlayer from './ScreenPlayer'
 
 export default async function ScreenViewerPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ screenId: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { screenId } = await params
+  const kiosk = (await searchParams).kiosk === '1'
   const screen = await prisma.screen.findUnique({
     where: { id: screenId },
     include: {
@@ -32,5 +35,5 @@ export default async function ScreenViewerPage({
     },
   }))
 
-  return <ScreenPlayer screenName={screen.name} assets={assets} />
+  return <ScreenPlayer screenName={screen.name} assets={assets} kiosk={kiosk} />
 }
