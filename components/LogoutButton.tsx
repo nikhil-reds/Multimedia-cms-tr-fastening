@@ -1,0 +1,62 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Loader2, LogOut } from "lucide-react"
+import { toast } from "sonner"
+
+type CurrentUser = { name: string; email: string }
+
+// Signed-in user + log out action, shown at the bottom of the sidebar.
+export default function LogoutButton() {
+  const router = useRouter()
+  const [user, setUser] = useState<CurrentUser | null>(null)
+  const [signingOut, setSigningOut] = useState(false)
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => setUser(data?.user ?? null))
+      .catch(() => setUser(null))
+  }, [])
+
+  async function handleLogout() {
+    setSigningOut(true)
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST" })
+      if (!response.ok) throw new Error()
+      toast.success("Signed out")
+      router.replace("/login")
+      router.refresh()
+    } catch {
+      toast.error("Failed to sign out")
+      setSigningOut(false)
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      {user ? (
+        <div className="flex items-center gap-3 px-1">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-xs font-bold text-white">
+            {user.name.charAt(0).toUpperCase()}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-zinc-900">{user.name}</p>
+            <p className="truncate text-xs text-zinc-500">{user.email}</p>
+          </div>
+        </div>
+      ) : null}
+
+      <button
+        type="button"
+        onClick={handleLogout}
+        disabled={signingOut}
+        className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm font-semibold text-zinc-600 transition-colors hover:bg-rose-50 hover:text-rose-600 disabled:opacity-60"
+      >
+        {signingOut ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
+        <span>{signingOut ? "Logging out…" : "Log out"}</span>
+      </button>
+    </div>
+  )
+}
