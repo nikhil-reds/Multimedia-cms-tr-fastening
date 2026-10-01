@@ -5,10 +5,10 @@ import { DocumentListSkeleton, ScreenGridSkeleton } from '@/components/main-scre
 export default function MainScreenLoading() {
   return (
     <div
-      className="bg-gray-50 flex gap-5 px-6 py-6 overflow-hidden"
-      style={{ height: 'calc(100vh - 113px)' }}
+      className="bg-[linear-gradient(to_top,#0a1f5c_0%,#1d4ed8_22%,#5cc8e0_52%,#d6f4fa_78%,#ffffff_100%)] flex gap-5 px-6 py-6 overflow-hidden"
+      style={{ height: 'calc(100vh - 64px)' }}
     >
-      <aside className="w-80 shrink-0 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col overflow-hidden">
+      <aside className="w-80 shrink-0 rounded-2xl bg-white/85 backdrop-blur-md border border-white/70 shadow-lg shadow-blue-950/10 flex flex-col overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-2">
@@ -24,7 +24,7 @@ export default function MainScreenLoading() {
         </div>
       </aside>
 
-      <section className="flex-1 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col overflow-hidden">
+      <section className="flex-1 rounded-2xl bg-white/85 backdrop-blur-md border border-white/70 shadow-lg shadow-blue-950/10 flex flex-col overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 shrink-0 flex items-center justify-between">
           <Skeleton className="h-3 w-16" />
           <Skeleton className="h-7 w-28 rounded-lg" />
