@@ -9,6 +9,8 @@ import {
   Tv,
 } from "lucide-react"
 
+import BrandLogo from "@/components/BrandLogo"
+import LogoutButton from "@/components/LogoutButton"
 import { cn } from "@/lib/utils"
 
 const navigationItems = [
@@ -47,14 +49,8 @@ export default function AppSidebar({ onNavigate }: AppSidebarProps) {
 
   return (
     <aside className="flex h-full w-full flex-col bg-white text-zinc-950">
-      <div className="flex h-16 items-center gap-3 border-b border-zinc-200 px-5">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-black text-white">
-          <Tv className="size-4" />
-        </div>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-bold leading-5">Rubenius</p>
-          <p className="truncate text-xs font-medium text-zinc-500">Multimedia Console</p>
-        </div>
+      <div className="flex h-16 items-center border-b border-zinc-200 px-5">
+        <BrandLogo size="sm" />
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">
@@ -81,13 +77,14 @@ export default function AppSidebar({ onNavigate }: AppSidebarProps) {
         })}
       </nav>
 
-      <div className="border-t border-zinc-200 p-4">
+      <div className="space-y-3 border-t border-zinc-200 p-4">
         <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
           <p className="text-xs font-bold text-zinc-900">Media workspace</p>
           <p className="mt-1 text-xs leading-5 text-zinc-500">
             Manage uploads, documents, and connected displays.
           </p>
         </div>
+        <LogoutButton />
       </div>
     </aside>
   )
