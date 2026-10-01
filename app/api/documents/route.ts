@@ -1,6 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+// Links that point straight at an image or video are stored with that media type
+// so screens render them as media instead of as a web page.
+const MEDIA_TYPES: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  avif: 'image/avif',
+  svg: 'image/svg+xml',
+  bmp: 'image/bmp',
+  mp4: 'video/mp4',
+  webm: 'video/webm',
+  mov: 'video/quicktime',
+  m4v: 'video/mp4',
+}
+
+function mimeTypeForUrl(url: URL) {
+  const extension = url.pathname.split('.').pop()?.toLowerCase() || ''
+  return MEDIA_TYPES[extension] || 'text/uri-list'
+}
+
 export async function GET() {
   try {
     const documents = await prisma.document.findMany({
@@ -35,6 +57,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Website URL must start with http:// or https://' }, { status: 400 })
     }
 
+    const mimeType = mimeTypeForUrl(parsedUrl)
+    const isMedia = mimeType !== 'text/uri-list'
+    const fileName = decodeURIComponent(parsedUrl.pathname.split('/').pop() || '')
+
     const session = await prisma.session.create({
       data: { status: 'COMPLETED' },
     })
@@ -42,9 +68,9 @@ export async function POST(request: NextRequest) {
     const document = await prisma.document.create({
       data: {
         sessionId: session.id,
-        name: body.name?.trim() || parsedUrl.hostname,
+        name: body.name?.trim() || (isMedia ? fileName : '') || parsedUrl.hostname,
         size: 0,
-        mimeType: 'text/uri-list',
+        mimeType,
         sourceType: 'WEBSITE',
         websiteUrl: parsedUrl.toString(),
         status: 'UPLOADED',
