@@ -18,22 +18,24 @@ type ScreenAsset = {
 type ScreenPlayerProps = {
   screenName: string
   assets: ScreenAsset[]
+  // Set by the desktop kiosk app: hides all player chrome and controls.
+  kiosk?: boolean
 }
 
-function AssetStage({ asset }: { asset: ScreenAsset }) {
+function AssetStage({ asset, kiosk }: { asset: ScreenAsset; kiosk: boolean }) {
   const document = asset.document
   const url = document.websiteUrl || document.s3Url
-
-  if (document.sourceType === 'WEBSITE' || document.websiteUrl) {
-    return <iframe src={url} title={document.name} className="h-full w-full border-0 bg-white" />
-  }
 
   if (document.mimeType.startsWith('image/')) {
     return <img src={url} alt={document.name} className="h-full w-full bg-black object-contain" />
   }
 
   if (document.mimeType.startsWith('video/')) {
-    return <video src={url} className="h-full w-full bg-black object-contain" controls autoPlay muted loop />
+    return <video src={url} className="h-full w-full bg-black object-contain" controls={!kiosk} autoPlay muted loop />
+  }
+
+  if (document.sourceType === 'WEBSITE' || document.websiteUrl) {
+    return <iframe src={url} title={document.name} className="h-full w-full border-0 bg-white" />
   }
 
   if (document.mimeType.startsWith('audio/')) {
@@ -41,7 +43,7 @@ function AssetStage({ asset }: { asset: ScreenAsset }) {
       <div className="flex h-full w-full flex-col items-center justify-center gap-5 bg-zinc-950 p-8 text-white">
         <FileText className="size-16 text-white/40" />
         <p className="max-w-xl text-center text-lg font-bold">{document.name}</p>
-        <audio src={url} controls autoPlay className="w-full max-w-xl" />
+        <audio src={url} controls={!kiosk} autoPlay loop className="w-full max-w-xl" />
       </div>
     )
   }
@@ -66,7 +68,7 @@ function AssetStage({ asset }: { asset: ScreenAsset }) {
   )
 }
 
-export default function ScreenPlayer({ screenName, assets }: ScreenPlayerProps) {
+export default function ScreenPlayer({ screenName, assets, kiosk = false }: ScreenPlayerProps) {
   const firstAsset = assets[0]
 
   function enterFullscreen() {
@@ -87,7 +89,7 @@ export default function ScreenPlayer({ screenName, assets }: ScreenPlayerProps) 
           <p className="text-sm text-zinc-500">
             Drag an asset onto this screen from the main screen page to start playback.
           </p>
-          <CloseButton />
+          {!kiosk && <CloseButton />}
         </div>
       </div>
     )
@@ -95,17 +97,19 @@ export default function ScreenPlayer({ screenName, assets }: ScreenPlayerProps) 
 
   return (
     <div className="relative h-screen bg-black text-white">
-      <div className="absolute right-4 top-4 z-20 flex items-center gap-2">
-        <button
-          onClick={enterFullscreen}
-          className="flex size-10 items-center justify-center rounded-full bg-black/65 text-white/80 ring-1 ring-white/15 backdrop-blur transition hover:bg-black hover:text-white"
-          aria-label={`Make ${screenName} full screen`}
-          title="Full screen"
-        >
-          <Maximize2 className="size-5" />
-        </button>
-      </div>
-      <AssetStage asset={firstAsset} />
+      {!kiosk && (
+        <div className="absolute right-4 top-4 z-20 flex items-center gap-2">
+          <button
+            onClick={enterFullscreen}
+            className="flex size-10 items-center justify-center rounded-full bg-black/65 text-white/80 ring-1 ring-white/15 backdrop-blur transition hover:bg-black hover:text-white"
+            aria-label={`Make ${screenName} full screen`}
+            title="Full screen"
+          >
+            <Maximize2 className="size-5" />
+          </button>
+        </div>
+      )}
+      <AssetStage asset={firstAsset} kiosk={kiosk} />
     </div>
   )
 }
