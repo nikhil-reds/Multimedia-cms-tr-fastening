@@ -315,7 +315,7 @@ export default function ScreenPanel() {
   }
 
   return (
-    <section className="flex-1 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col overflow-hidden">
+    <section className="flex-1 rounded-2xl bg-white/85 backdrop-blur-md border border-white/70 shadow-lg shadow-blue-950/10 flex flex-col overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100 shrink-0 flex items-center justify-between">
         <h2 className="text-xs font-semibold text-gray-400 tracking-widest uppercase">
           Screens
