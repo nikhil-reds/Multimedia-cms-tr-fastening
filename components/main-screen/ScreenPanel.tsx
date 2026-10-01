@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import type { DragEvent } from 'react'
 import { ExternalLink, FileText, Globe2, Monitor, Plus, Trash2, X } from 'lucide-react'
 import { toast } from 'sonner'
-import { Skeleton } from '@/components/ui/skeleton'
 import { FileIcon, iconBg } from './shared'
+import { PreviewSkeleton, ScreenGridSkeleton } from './skeletons'
 
 type DocumentAsset = {
   id: string
@@ -41,24 +41,59 @@ function getAssetUrl(document: DocumentAsset) {
 
 function AssetPreview({ document }: { document: DocumentAsset }) {
   const url = getAssetUrl(document)
+  // Errors count as "loaded" too, so a broken asset doesn't shimmer forever.
+  const [loaded, setLoaded] = useState(false)
+  const markLoaded = () => setLoaded(true)
 
-  if (document.sourceType === 'WEBSITE' || document.websiteUrl) {
+  if (document.mimeType.startsWith('image/') && url) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-zinc-50 p-4 text-center">
-        <div className="flex size-12 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-zinc-200">
-          <Globe2 className="size-6 text-zinc-700" />
-        </div>
-        <p className="line-clamp-2 text-xs font-semibold text-zinc-700">{document.name}</p>
+      <div className="relative h-full w-full">
+        <img src={url} alt={document.name} onLoad={markLoaded} onError={markLoaded} className="h-full w-full object-cover" />
+        {!loaded && <PreviewSkeleton />}
       </div>
     )
   }
 
-  if (document.mimeType.startsWith('image/') && url) {
-    return <img src={url} alt={document.name} className="h-full w-full object-cover" />
+  if (document.mimeType.startsWith('video/') && url) {
+    return (
+      <div className="relative h-full w-full">
+        <video
+          src={url}
+          onLoadedData={markLoaded}
+          onError={markLoaded}
+          className="pointer-events-none h-full w-full object-cover"
+          preload="metadata"
+          muted
+        />
+        {!loaded && <PreviewSkeleton />}
+      </div>
+    )
   }
 
-  if (document.mimeType.startsWith('video/') && url) {
-    return <video src={url} className="h-full w-full object-cover" preload="metadata" muted />
+  if (document.sourceType === 'WEBSITE' || document.websiteUrl) {
+    return (
+      <div className="relative h-full w-full overflow-hidden bg-white">
+        {/* Shown underneath in case the site refuses to be framed. */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
+          <div className="flex size-12 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-zinc-200">
+            <Globe2 className="size-6 text-zinc-700" />
+          </div>
+          <p className="line-clamp-2 text-xs font-semibold text-zinc-700">{document.name}</p>
+        </div>
+        {/* Render at 4x size and scale down so the card shows a desktop-width thumbnail.
+            pointer-events-none keeps drag events on the card instead of the iframe. */}
+        <iframe
+          src={url}
+          title={document.name}
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin"
+          tabIndex={-1}
+          onLoad={markLoaded}
+          className="pointer-events-none absolute left-0 top-0 h-[400%] w-[400%] origin-top-left scale-25 border-0"
+        />
+        {!loaded && <PreviewSkeleton />}
+      </div>
+    )
   }
 
   if (document.mimeType === 'application/pdf') {
@@ -76,6 +111,21 @@ function AssetPreview({ document }: { document: DocumentAsset }) {
       <p className="line-clamp-2 text-xs font-semibold text-zinc-700">{document.name}</p>
     </div>
   )
+}
+
+// Pulls an http(s) URL out of a drop from another tab, the address bar or a dragged image.
+function extractUrl(dataTransfer: DataTransfer) {
+  const uriList = dataTransfer.getData('text/uri-list')
+  const fromUriList = uriList.split('\n').map((line) => line.trim()).find((line) => line && !line.startsWith('#'))
+  const fromHtml = dataTransfer.getData('text/html').match(/<img[^>]+src=["']([^"']+)["']/i)?.[1]
+  const candidate = (fromUriList || fromHtml || dataTransfer.getData('text/plain')).trim()
+
+  try {
+    const url = new URL(candidate)
+    return ['http:', 'https:'].includes(url.protocol) ? url.toString() : null
+  } catch {
+    return null
+  }
 }
 
 export default function ScreenPanel() {
@@ -180,22 +230,88 @@ export default function ScreenPanel() {
     }
   }
 
+  // Uploads a file dropped from the computer, then assigns it.
+  async function assignFile(screenId: string, file: File) {
+    setAssigningId(screenId)
+    try {
+      const formData = new FormData()
+      formData.append('files', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json().catch(() => null)
+      const document = data?.documents?.[0] as DocumentAsset | undefined
+      if (!res.ok || !document) {
+        toast.error(data?.error || `Failed to upload "${file.name}"`)
+        return
+      }
+      window.dispatchEvent(new Event('documents:changed'))
+      await assignAsset(screenId, document)
+    } catch {
+      toast.error(`Failed to upload "${file.name}"`)
+    } finally {
+      setAssigningId(null)
+      setDragOverId(null)
+    }
+  }
+
+  // Saves a link (website, or an image/video URL dragged from a browser) as a document, then assigns it.
+  async function assignLink(screenId: string, url: string) {
+    setAssigningId(screenId)
+    try {
+      const res = await fetch('/api/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.id) {
+        toast.error(data?.error || 'Failed to save link')
+        return
+      }
+      window.dispatchEvent(new Event('documents:changed'))
+      await assignAsset(screenId, data as DocumentAsset)
+    } catch {
+      toast.error('Failed to save link')
+    } finally {
+      setAssigningId(null)
+      setDragOverId(null)
+    }
+  }
+
   function handleDrop(event: DragEvent<HTMLDivElement>, screenId: string) {
     event.preventDefault()
-    const payload = event.dataTransfer.getData('application/json')
-    if (!payload) {
-      setDragOverId(null)
+    const { dataTransfer } = event
+
+    // 1. A document dragged from the Documents panel.
+    const payload = dataTransfer.getData('application/json')
+    if (payload) {
+      try {
+        const document = JSON.parse(payload) as DocumentAsset
+        if (!document.id) throw new Error('Missing document id')
+        assignAsset(screenId, document)
+      } catch {
+        toast.error('Could not read dragged asset')
+        setDragOverId(null)
+      }
       return
     }
 
-    try {
-      const document = JSON.parse(payload) as DocumentAsset
-      if (!document.id) throw new Error('Missing document id')
-      assignAsset(screenId, document)
-    } catch {
-      toast.error('Could not read dragged asset')
-      setDragOverId(null)
+    // 2. A file (photo, video, PDF…) dragged from the computer. One asset per screen.
+    const file = dataTransfer.files[0]
+    if (file) {
+      if (dataTransfer.files.length > 1) toast.info('A screen shows one asset — using the first file')
+      assignFile(screenId, file)
+      return
     }
+
+    // 3. A link or image dragged from a browser tab or address bar.
+    const url = extractUrl(dataTransfer)
+    if (url) {
+      assignLink(screenId, url)
+      return
+    }
+
+    toast.error('Drop a document, file, photo or link')
+    setDragOverId(null)
   }
 
   return (
@@ -216,11 +332,7 @@ export default function ScreenPanel() {
 
       <div className="flex-1 overflow-y-auto p-5">
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
-            {Array.from({ length: 6 }).map((_, idx) => (
-              <Skeleton key={idx} className="aspect-square rounded-2xl" />
-            ))}
-          </div>
+          <ScreenGridSkeleton />
         ) : screens.length === 0 ? (
           <div className="h-full min-h-64 flex flex-col items-center justify-center text-center text-gray-400 gap-3">
             <Monitor className="size-10" />
@@ -242,7 +354,10 @@ export default function ScreenPanel() {
                     event.dataTransfer.dropEffect = 'copy'
                     setDragOverId(screen.id)
                   }}
-                  onDragLeave={() => setDragOverId(null)}
+                  onDragLeave={(event) => {
+                    // Ignore leave events fired when moving between the card's own children.
+                    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragOverId(null)
+                  }}
                   onDrop={(event) => handleDrop(event, screen.id)}
                   className={`group relative aspect-square overflow-hidden rounded-2xl border bg-zinc-50 transition-all ${
                     isActiveDrop
@@ -252,11 +367,11 @@ export default function ScreenPanel() {
                 >
                   <div className="absolute inset-0">
                     {latestAsset ? (
-                      <AssetPreview document={latestAsset.document} />
+                      <AssetPreview key={latestAsset.id + latestAsset.documentId} document={latestAsset.document} />
                     ) : (
                       <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-6 text-center text-gray-400">
                         <Monitor className="size-12" />
-                        <p className="text-xs font-medium">Drop an asset here</p>
+                        <p className="text-xs font-medium">Drop a document, photo or link here</p>
                       </div>
                     )}
                   </div>
@@ -306,7 +421,7 @@ export default function ScreenPanel() {
                         <div className="min-w-0">
                           <p className="truncate text-xs font-semibold text-white">{latestAsset.document.name}</p>
                           <p className="mt-0.5 text-[10px] font-medium uppercase text-white/60">
-                            {latestAsset.document.sourceType === 'WEBSITE' ? 'Website' : latestAsset.document.mimeType}
+                            {latestAsset.document.mimeType === 'text/uri-list' ? 'Website' : latestAsset.document.mimeType}
                           </p>
                         </div>
                         <button
