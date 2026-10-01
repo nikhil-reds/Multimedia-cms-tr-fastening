@@ -16,7 +16,7 @@ export default function LoginPage() {
       footer={
         <>
           Need access?{" "}
-          <Link href="#" className="font-semibold text-zinc-950 hover:underline">
+          <Link href="#" className="font-semibold text-[#1d4ed8] hover:text-[#012d74] hover:underline">
             Contact your administrator
           </Link>
         </>
