@@ -1,0 +1,48 @@
+name: Build Windows Screen Player
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Bakes the default CMS address into the .exe. Set it under
+      # Settings → Secrets and variables → Actions → Variables → CMS_URL.
+      # If it is empty, the app asks for the server address on first launch.
+      - name: Write build config
+        shell: bash
+        env:
+          CMS_URL: ${{ vars.CMS_URL }}
+        run: node -e "require('fs').writeFileSync('build-config.json', JSON.stringify({ serverUrl: process.env.CMS_URL || '' }, null, 2))"
+
+      - name: Build Windows .exe
+        run: npm run dist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload .exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TRFasteningsScreenPlayer-windows
+          path: desktop/dist/*.exe
+          if-no-files-found: error
+          retention-days: 30
