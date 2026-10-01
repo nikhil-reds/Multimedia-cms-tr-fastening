@@ -1,13 +1,15 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { FileText, Search } from 'lucide-react'
+import { FileText, Globe2, Search } from 'lucide-react'
 import { toast } from 'sonner'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Document, FileIcon, formatBytes, formatDate, iconBg, StatusBadge } from './shared'
+import { DocumentListSkeleton } from './skeletons'
 
 type DocumentItem = Document & {
   cloudinaryUrl?: string | null
+  websiteUrl?: string | null
+  sourceType?: 'FILE' | 'WEBSITE'
   createdAt?: string
   updatedAt?: string
 }
@@ -18,26 +20,33 @@ export default function FilePanel() {
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    fetch('/api/documents')
-      .then((response) => {
-        if (!response.ok) throw new Error('Failed to load documents')
-        return response.json()
-      })
-      .then((data: DocumentItem[]) => {
-        const normalized = Array.isArray(data)
-          ? data.map((doc) => ({
-              ...doc,
-              s3Url: doc.s3Url || doc.cloudinaryUrl || '',
-            }))
-          : []
+    function loadDocuments() {
+      fetch('/api/documents')
+        .then((response) => {
+          if (!response.ok) throw new Error('Failed to load documents')
+          return response.json()
+        })
+        .then((data: DocumentItem[]) => {
+          const normalized = Array.isArray(data)
+            ? data.map((doc) => ({
+                ...doc,
+                s3Url: doc.s3Url || doc.cloudinaryUrl || doc.websiteUrl || '',
+              }))
+            : []
 
-        setDocuments(normalized)
-      })
-      .catch(() => {
-        setDocuments([])
-        toast.error('Failed to load documents')
-      })
-      .finally(() => setLoading(false))
+          setDocuments(normalized)
+        })
+        .catch(() => {
+          setDocuments([])
+          toast.error('Failed to load documents')
+        })
+        .finally(() => setLoading(false))
+    }
+
+    loadDocuments()
+    // ScreenPanel fires this after creating a document from an external drop.
+    window.addEventListener('documents:changed', loadDocuments)
+    return () => window.removeEventListener('documents:changed', loadDocuments)
   }, [])
 
   const filteredDocuments = useMemo(() => {
@@ -80,20 +89,7 @@ export default function FilePanel() {
 
       <div className="flex-1 overflow-y-auto p-4">
         {loading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <div key={index} className="rounded-xl border border-gray-100 p-3">
-                <div className="flex gap-3">
-                  <Skeleton className="h-12 w-12 rounded-xl" />
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <Skeleton className="h-4 w-4/5" />
-                    <Skeleton className="h-3 w-3/5" />
-                    <Skeleton className="h-3 w-2/5" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <DocumentListSkeleton />
         ) : filteredDocuments.length === 0 ? (
           <div className="flex min-h-80 flex-col items-center justify-center gap-3 px-6 text-center text-gray-400">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100">
@@ -110,52 +106,58 @@ export default function FilePanel() {
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredDocuments.map((doc) => (
-              <a
-                key={doc.id}
-                href={doc.s3Url || '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                draggable={Boolean(doc.s3Url)}
-                onClick={(event) => {
-                  if (!doc.s3Url) event.preventDefault()
-                }}
-                onDragStart={(event) => {
-                  event.dataTransfer.setData('application/json', JSON.stringify(doc))
-                  event.dataTransfer.effectAllowed = 'copy'
-                }}
-                className="group block rounded-xl border border-gray-100 bg-white p-3 transition hover:border-gray-200 hover:shadow-sm active:cursor-grabbing"
-              >
-                <div className="flex gap-3">
-                  <div className={`h-12 w-12 shrink-0 rounded-xl flex items-center justify-center ${iconBg(doc.mimeType)} overflow-hidden`}>
-                    {doc.mimeType.startsWith('image/') && doc.s3Url ? (
-                      <img src={doc.s3Url} alt={doc.name} className="h-full w-full object-cover" />
-                    ) : doc.mimeType.startsWith('video/') && doc.s3Url ? (
-                      <video src={doc.s3Url} className="h-full w-full object-cover" preload="metadata" muted />
-                    ) : (
-                      <FileIcon mimeType={doc.mimeType} className="h-6 w-6" />
-                    )}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <p className="line-clamp-2 break-words text-sm font-semibold leading-snug text-gray-900 group-hover:text-black">
-                      {doc.name}
-                    </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <StatusBadge status={doc.status} />
-                      <span className="text-xs text-gray-400">
-                        {formatBytes(doc.size)}
-                      </span>
+            {filteredDocuments.map((doc) => {
+              // Image/video links show as media; other links show as websites.
+              const isWebsite = (doc.sourceType === 'WEBSITE' || Boolean(doc.websiteUrl)) && !/^(image|video)\//.test(doc.mimeType)
+              return (
+                <a
+                  key={doc.id}
+                  href={doc.s3Url || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  draggable={Boolean(doc.s3Url)}
+                  onClick={(event) => {
+                    if (!doc.s3Url) event.preventDefault()
+                  }}
+                  onDragStart={(event) => {
+                    event.dataTransfer.setData('application/json', JSON.stringify(doc))
+                    event.dataTransfer.effectAllowed = 'copy'
+                  }}
+                  className="group block rounded-xl border border-gray-100 bg-white p-3 transition hover:border-gray-200 hover:shadow-sm active:cursor-grabbing"
+                >
+                  <div className="flex gap-3">
+                    <div className={`h-12 w-12 shrink-0 rounded-xl flex items-center justify-center ${isWebsite ? 'bg-sky-50' : iconBg(doc.mimeType)} overflow-hidden`}>
+                      {isWebsite ? (
+                        <Globe2 className="h-6 w-6 text-sky-600" />
+                      ) : doc.mimeType.startsWith('image/') && doc.s3Url ? (
+                        <img src={doc.s3Url} alt={doc.name} className="h-full w-full object-cover" />
+                      ) : doc.mimeType.startsWith('video/') && doc.s3Url ? (
+                        <video src={doc.s3Url} className="h-full w-full object-cover" preload="metadata" muted />
+                      ) : (
+                        <FileIcon mimeType={doc.mimeType} className="h-6 w-6" />
+                      )}
                     </div>
-                    {doc.createdAt ? (
-                      <p className="mt-2 truncate text-xs text-gray-400">
-                        {formatDate(doc.createdAt)}
+
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-2 break-words text-sm font-semibold leading-snug text-gray-900 group-hover:text-black">
+                        {doc.name}
                       </p>
-                    ) : null}
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <StatusBadge status={doc.status} />
+                        <span className="text-xs text-gray-400">
+                          {isWebsite ? 'Website' : formatBytes(doc.size)}
+                        </span>
+                      </div>
+                      {doc.createdAt ? (
+                        <p className="mt-2 truncate text-xs text-gray-400">
+                          {formatDate(doc.createdAt)}
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-              </a>
-            ))}
+                </a>
+              )
+            })}
           </div>
         )}
       </div>
