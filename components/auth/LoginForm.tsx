@@ -83,7 +83,7 @@ export default function LoginForm() {
         icon={Lock}
         error={errors.password}
         labelAction={
-          <Link href="#" className="text-xs font-semibold text-zinc-500 transition hover:text-zinc-950">
+          <Link href="#" className="text-xs font-semibold text-[#1d4ed8] transition hover:text-[#012d74]">
             Forgot password?
           </Link>
         }
@@ -100,17 +100,17 @@ export default function LoginForm() {
         />
       </FormField>
 
-      <label className="flex cursor-pointer items-center gap-2 text-sm text-zinc-600 select-none">
+      <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600 select-none">
         <input
           type="checkbox"
           checked={remember}
           onChange={(event) => setRemember(event.target.checked)}
-          className="size-4 rounded border-zinc-300 accent-black"
+          className="size-4 rounded border-slate-300 accent-[#1d4ed8]"
         />
         Keep me signed in
       </label>
 
-      <Button type="submit" disabled={submitting} className="h-11 w-full rounded-lg text-sm font-semibold">
+      <Button type="submit" disabled={submitting} className="h-12 w-full rounded-xl bg-[linear-gradient(135deg,#012d74_0%,#1d4ed8_100%)] text-sm font-semibold text-white shadow-lg shadow-blue-900/25 transition hover:brightness-110 hover:shadow-blue-900/35">
         {submitting ? (
           <>
             <Loader2 className="size-4 animate-spin" />
