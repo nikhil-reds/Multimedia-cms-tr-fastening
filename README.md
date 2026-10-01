@@ -1,4 +1,4 @@
-# Rubenius Multimedia
+# TR Fastenings Multimedia
 
 A media management platform for uploading, organizing, and viewing documents, images, and videos. Files are stored in AWS S3, sessions group uploads, and the viewer renders content by MIME type.
 
@@ -282,3 +282,30 @@ docker compose up -d
 | `npm run lint` | Run ESLint |
 | `npx prisma studio` | Open Prisma database GUI |
 | `npx prisma migrate dev` | Create and apply a new migration |
+
+---
+
+## Windows Screen Player (`desktop/`)
+
+An Electron kiosk app that plays a screen's assigned content full screen on a Windows PC.
+
+**Flow:** open the `.exe` → full screen → Screen ID modal → Submit → the screen's content plays (`/view/screen/<id>?kiosk=1`, which hides all player controls).
+
+| Key | Action |
+|---|---|
+| `Ctrl + R` / `F5` | Never reloads — reopens the Screen ID modal to switch screens |
+| `Esc` | Closes the modal and returns to the current content |
+| `Ctrl + Shift + Q` | Quits the player |
+
+- The app checks the CMS every 30 seconds and reloads when the screen's assigned asset changes. If the page fails to load, it retries every 10 seconds.
+- The last server and Screen ID are saved in `%APPDATA%\TR Fastenings Screen Player\config.json`.
+- The default server address is built into the `.exe` from the `CMS_URL` GitHub Actions variable (Settings → Secrets and variables → Actions → Variables). If it's empty, the modal asks for it ("Server settings").
+
+```bash
+cd desktop
+npm install
+npm start      # run locally
+npm run dist   # build desktop/dist/TRFasteningsScreenPlayer-<version>.exe
+```
+
+**CI:** `.github/workflows/build-desktop.yml` runs on every push to `main`. It builds the portable `.exe` on `windows-latest` and uploads it as the `TRFasteningsScreenPlayer-windows` artifact. To download it, open the run under the repo's **Actions** tab.
