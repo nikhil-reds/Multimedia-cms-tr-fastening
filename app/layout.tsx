@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Rubenius Multimedia",
-  description: "Rubenius Multimedia — your platform for managing and viewing media documents.",
+  title: "TR Fastenings Multimedia",
+  description: "TR Fastenings Multimedia — your platform for managing and viewing media documents.",
 };
 
 import { Toaster } from "@/components/ui/sonner"
