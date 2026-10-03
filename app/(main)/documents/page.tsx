@@ -401,24 +401,24 @@ export default function DocumentsDashboard() {
 
   // Background: white at the top, light sea blue in the middle, dark blue at the bottom.
   return (
-    <div className="bg-[linear-gradient(to_top,#0a1f5c_0%,#1d4ed8_22%,#5cc8e0_52%,#d6f4fa_78%,#ffffff_100%)] min-h-screen py-10 px-8 flex flex-col gap-8 antialiased">
+    <div className="bg-[linear-gradient(to_top,#0a1f5c_0%,#1d4ed8_22%,#5cc8e0_52%,#d6f4fa_78%,#ffffff_100%)] dark:bg-[linear-gradient(to_top,#020617_0%,#0f172a_50%,#1e293b_100%)] min-h-screen py-10 px-8 flex flex-col gap-8 antialiased">
       {/* 1. Page Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-100 pb-6 shrink-0">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-100 dark:border-zinc-800 pb-6 shrink-0">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Documents</h1>
-          <p className="text-xs text-zinc-500 mt-1">Manage and review stored files and website assets securely.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Documents</h1>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Manage and review stored files and website assets securely.</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Search bar */}
           <div className="relative">
-            <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-zinc-400 dark:text-zinc-500 absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder="Search filename, tags..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-white border border-zinc-200 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-black w-60 transition-all shadow-sm"
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white w-60 transition-all shadow-sm"
             />
           </div>
 
@@ -426,7 +426,7 @@ export default function DocumentsDashboard() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white border border-zinc-200 rounded-xl px-3 py-2 text-xs text-zinc-700 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer shadow-sm"
+            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white cursor-pointer shadow-sm"
           >
             <option value="ALL">All Statuses</option>
             <option value="COMPLETED">Completed</option>
@@ -439,7 +439,7 @@ export default function DocumentsDashboard() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="bg-white border border-zinc-200 rounded-xl px-3 py-2 text-xs text-zinc-700 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer shadow-sm"
+            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white cursor-pointer shadow-sm"
           >
             <option value="ALL">All Formats</option>
             <option value="PDF">PDF</option>
@@ -454,7 +454,7 @@ export default function DocumentsDashboard() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="bg-white border border-zinc-200 rounded-xl px-3 py-2 text-xs text-zinc-700 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer shadow-sm"
+            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white cursor-pointer shadow-sm"
           >
             <option value="NEWEST">Newest Uploaded</option>
             <option value="OLDEST">Oldest Uploaded</option>
@@ -678,38 +678,38 @@ export default function DocumentsDashboard() {
       {/* 2. Top Statistics Section */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 shrink-0">
         {/* Total Documents */}
-        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
+        <div className="bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md border border-white/70 dark:border-zinc-800 shadow-blue-950/10 dark:shadow-black/40 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Total Documents</span>
             <LucideFileIcon className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
           </div>
-          <h3 className="text-2xl font-extrabold text-zinc-900 leading-none">{totalDocs}</h3>
+          <h3 className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 leading-none">{totalDocs}</h3>
           <p className="text-[10px] text-zinc-400">Total uploaded files cataloged</p>
         </div>
 
         {/* Storage Used */}
-        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
+        <div className="bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md border border-white/70 dark:border-zinc-800 shadow-blue-950/10 dark:shadow-black/40 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Storage Used</span>
             <HardDrive className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
           </div>
-          <h3 className="text-2xl font-extrabold text-zinc-900 leading-none">{formatBytes(totalSize)}</h3>
+          <h3 className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 leading-none">{formatBytes(totalSize)}</h3>
           <div className="flex flex-col gap-1 w-full mt-0.5">
-            <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-              <div className="h-full bg-black rounded-full" style={{ width: `${Math.min(100, (totalSize / (1024 * 1024 * 100)) * 100)}%` }} />
+            <div className="w-full h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-full bg-black dark:bg-white rounded-full" style={{ width: `${Math.min(100, (totalSize / (1024 * 1024 * 100)) * 100)}%` }} />
             </div>
             <span className="text-[9px] text-zinc-400 text-right">Limit: 100 MB</span>
           </div>
         </div>
 
         {/* Processing Status */}
-        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
+        <div className="bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md border border-white/70 dark:border-zinc-800 shadow-blue-950/10 dark:shadow-black/40 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Process Status</span>
             <CheckCircle className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
           </div>
           <div className="flex items-end justify-between">
-            <h3 className="text-2xl font-extrabold text-zinc-900 leading-none">{completedCount}</h3>
+            <h3 className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 leading-none">{completedCount}</h3>
             <div className="flex flex-col text-right text-[9px] text-zinc-400 leading-tight">
               <span>{pendingCount} Pending</span>
               <span>{uploadingCount} Proc</span>
@@ -721,26 +721,26 @@ export default function DocumentsDashboard() {
         </div>
 
         {/* File Formats */}
-        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
+        <div className="bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md border border-white/70 dark:border-zinc-800 shadow-blue-950/10 dark:shadow-black/40 p-4 rounded-2xl flex flex-col gap-2 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Formats Split</span>
             <SlidersHorizontal className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="grid grid-cols-4 gap-1.5 text-[9px] font-bold text-zinc-650 mt-1">
-            <span className="bg-zinc-50 p-1 rounded text-center">PDF: {documents.filter(d => d.name.toLowerCase().endsWith('.pdf')).length}</span>
-            <span className="bg-zinc-50 p-1 rounded text-center">IMG: {documents.filter(d => d.mimeType.startsWith('image/')).length}</span>
-            <span className="bg-zinc-50 p-1 rounded text-center">VID: {documents.filter(d => d.mimeType.startsWith('video/')).length}</span>
-            <span className="bg-zinc-50 p-1 rounded text-center">WEB: {websiteCount}</span>
+          <div className="grid grid-cols-4 gap-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-400 mt-1">
+            <span className="bg-zinc-50 dark:bg-zinc-900 p-1 rounded text-center">PDF: {documents.filter(d => d.name.toLowerCase().endsWith('.pdf')).length}</span>
+            <span className="bg-zinc-50 dark:bg-zinc-900 p-1 rounded text-center">IMG: {documents.filter(d => d.mimeType.startsWith('image/')).length}</span>
+            <span className="bg-zinc-50 dark:bg-zinc-900 p-1 rounded text-center">VID: {documents.filter(d => d.mimeType.startsWith('video/')).length}</span>
+            <span className="bg-zinc-50 dark:bg-zinc-900 p-1 rounded text-center">WEB: {websiteCount}</span>
           </div>
         </div>
 
         {/* Recent Uploads */}
-        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
+        <div className="bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md border border-white/70 dark:border-zinc-800 shadow-blue-950/10 dark:shadow-black/40 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Recent (24h)</span>
             <Clock className="w-4 h-4 text-zinc-500 group-hover:scale-110 transition-transform" />
           </div>
-          <h3 className="text-2xl font-extrabold text-zinc-900 leading-none">{recentCount}</h3>
+          <h3 className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 leading-none">{recentCount}</h3>
           <p className="text-[10px] text-zinc-400">Assets added in the last 24 hours</p>
         </div>
       </section>
@@ -782,7 +782,7 @@ export default function DocumentsDashboard() {
       )}
 
       {/* 4. Table / Main List Workspace */}
-      <section className="flex-1 bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 rounded-2xl shadow-lg overflow-hidden flex flex-col">
+      <section className="flex-1 bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md border border-white/70 dark:border-zinc-800 shadow-blue-950/10 dark:shadow-black/40 rounded-2xl shadow-lg overflow-hidden flex flex-col">
         {loading ? (
           <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
             <div className="space-y-4">
@@ -815,16 +815,16 @@ export default function DocumentsDashboard() {
         ) : filteredDocs.length === 0 ? (
           /* Empty State */
           <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
-            <div className="w-16 h-16 rounded-full bg-zinc-50 border border-zinc-100 flex items-center justify-center mb-4">
-              <LucideFileIcon className="w-8 h-8 text-zinc-400" />
+            <div className="w-16 h-16 rounded-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 flex items-center justify-center mb-4">
+              <LucideFileIcon className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-800">No documents found</h3>
+            <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-100">No documents found</h3>
             <p className="text-xs text-zinc-400 max-w-xs mt-1 leading-relaxed">
               No assets matched your filters or search. Try adding files or website links.
             </p>
             <Button
               onClick={() => setIsUploadOpen(true)}
-              className="mt-6 bg-black hover:bg-zinc-900 text-white font-semibold text-xs py-2 px-5 rounded-xl cursor-pointer"
+              className="mt-6 bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-xs py-2 px-5 rounded-xl cursor-pointer"
             >
               Add First Asset
             </Button>
@@ -834,7 +834,7 @@ export default function DocumentsDashboard() {
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto">
               <Table className="relative">
-                <TableHeader className="bg-zinc-50 border-b border-zinc-100 sticky top-0 z-10">
+                <TableHeader className="bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800 sticky top-0 z-10">
                   <TableRow>
                     <TableHead className="w-12 text-center">
                       <input
@@ -844,13 +844,13 @@ export default function DocumentsDashboard() {
                         className="w-3.5 h-3.5 accent-black rounded cursor-pointer mt-1"
                       />
                     </TableHead>
-                    <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">File Name</TableHead>
-                    <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Type</TableHead>
-                    <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Size</TableHead>
-                    <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Status</TableHead>
-                    <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Created Date</TableHead>
-                    <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Tags</TableHead>
-                    <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4 text-right">Actions</TableHead>
+                    <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4">File Name</TableHead>
+                    <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4">Type</TableHead>
+                    <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4">Size</TableHead>
+                    <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4">Status</TableHead>
+                    <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4">Created Date</TableHead>
+                    <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4">Tags</TableHead>
+                    <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -859,8 +859,8 @@ export default function DocumentsDashboard() {
                     return (
                       <TableRow
                         key={doc.id}
-                        className={`border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors ${
-                          isSelected ? 'bg-zinc-50/80' : ''
+                        className={`border-b border-zinc-50 dark:border-zinc-800/50 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors ${
+                          isSelected ? 'bg-zinc-50/80 dark:bg-zinc-800/50' : ''
                         }`}
                       >
                         <TableCell className="text-center">
@@ -871,7 +871,7 @@ export default function DocumentsDashboard() {
                             className="w-3.5 h-3.5 accent-black rounded cursor-pointer"
                           />
                         </TableCell>
-                        <TableCell className="p-4 font-semibold text-zinc-800 text-xs">
+                        <TableCell className="p-4 font-semibold text-zinc-800 dark:text-zinc-100 text-xs">
                           <div className="flex items-center gap-3">
                             <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${iconBg(doc.mimeType)} shrink-0 shadow-sm overflow-hidden`}>
                               <AssetPreview doc={doc} />
@@ -881,18 +881,18 @@ export default function DocumentsDashboard() {
                             </span>
                           </div>
                         </TableCell>
-                        <TableCell className="p-4 text-[10px] font-mono text-zinc-400 uppercase">
+                        <TableCell className="p-4 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 uppercase">
                           {doc.sourceType === 'WEBSITE' || doc.websiteUrl ? 'website' : doc.mimeType.split('/')[1] || doc.mimeType}
                         </TableCell>
-                        <TableCell className="p-4 text-xs font-medium text-zinc-600">
+                        <TableCell className="p-4 text-xs font-medium text-zinc-600 dark:text-zinc-300">
                           {doc.sourceType === 'WEBSITE' || doc.websiteUrl ? 'External' : formatBytes(doc.size)}
                         </TableCell>
                         <TableCell className="p-4">{getStatusBadge(doc.status)}</TableCell>
-                        <TableCell className="p-4 text-xs text-zinc-500">
+                        <TableCell className="p-4 text-xs text-zinc-500 dark:text-zinc-400">
                           {formatDate(doc.createdAt)}
                         </TableCell>
                         <TableCell className="p-4">
-                          <span className="px-2 py-0.5 rounded bg-zinc-100 text-zinc-650 text-[10px] font-semibold">
+                          <span className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-650 dark:text-zinc-300 text-[10px] font-semibold">
                             media
                           </span>
                         </TableCell>
@@ -900,7 +900,7 @@ export default function DocumentsDashboard() {
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => setSelectedDetailDoc(doc)}
-                              className="p-2 text-zinc-500 hover:text-black hover:bg-zinc-100 rounded-lg transition-all cursor-pointer"
+                              className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-all cursor-pointer"
                               title="Preview and details"
                             >
                               <Eye className="w-4 h-4" />
@@ -908,7 +908,7 @@ export default function DocumentsDashboard() {
 
                             <button
                               onClick={() => setSelectedDetailDoc(doc)}
-                              className="p-2 text-zinc-500 hover:text-black hover:bg-zinc-100 rounded-lg transition-all cursor-pointer"
+                              className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-all cursor-pointer"
                               title="Details"
                             >
                               <Info className="w-4 h-4" />
@@ -917,7 +917,7 @@ export default function DocumentsDashboard() {
                             {/* Delete dialog trigger */}
                             <button
                               onClick={() => setDeleteConfirmId(doc.id)}
-                              className="p-2 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all cursor-pointer"
+                              className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950 rounded-lg transition-all cursor-pointer"
                               title="Delete"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -933,8 +933,8 @@ export default function DocumentsDashboard() {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="bg-zinc-50/50 border-t border-zinc-100 px-6 py-4 flex items-center justify-between shrink-0">
-                <span className="text-xs text-zinc-500">
+              <div className="bg-zinc-50/50 dark:bg-zinc-950/50 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 flex items-center justify-between shrink-0">
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">
                   Showing {Math.min(filteredDocs.length, (currentPage - 1) * itemsPerPage + 1)}–
                   {Math.min(filteredDocs.length, currentPage * itemsPerPage)} of {filteredDocs.length} files
                 </span>
@@ -956,8 +956,8 @@ export default function DocumentsDashboard() {
                         onClick={() => setCurrentPage(p)}
                         className={`w-7 h-7 rounded-lg text-xs font-semibold transition-all ${
                           currentPage === p
-                            ? 'bg-black text-white'
-                            : 'hover:bg-zinc-150 text-zinc-600'
+                            ? 'bg-black dark:bg-white text-white dark:text-black'
+                            : 'hover:bg-zinc-150 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
                         }`}
                       >
                         {p}
@@ -982,7 +982,7 @@ export default function DocumentsDashboard() {
 
       {/* 5. Row Delete Confirmation Dialog */}
       <Dialog open={deleteConfirmId !== null} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
-        <DialogContent className="bg-white rounded-2xl p-6 shadow-2xl">
+        <DialogContent className="bg-white dark:bg-zinc-950 rounded-2xl p-6 shadow-2xl">
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
@@ -1003,10 +1003,10 @@ export default function DocumentsDashboard() {
 
       {/* 6. Document Preview and Details Modal */}
       <Dialog open={selectedDetailDoc !== null} onOpenChange={(open) => !open && setSelectedDetailDoc(null)}>
-        <DialogContent className="max-h-[90vh] max-w-5xl overflow-hidden rounded-2xl bg-white p-0 shadow-2xl sm:max-w-5xl">
+        <DialogContent className="max-h-[90vh] max-w-5xl overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 p-0 shadow-2xl sm:max-w-5xl">
           {selectedDetailDoc && (
             <div className="grid max-h-[90vh] grid-cols-1 overflow-hidden md:grid-cols-[1fr_360px]">
-              <div className="min-h-[360px] bg-zinc-950">
+              <div className="min-h-[360px] bg-zinc-950 dark:bg-black">
                 <AssetPreview doc={selectedDetailDoc} large />
               </div>
 
@@ -1015,77 +1015,77 @@ export default function DocumentsDashboard() {
                   <div className={`mb-2 flex h-12 w-12 items-center justify-center rounded-xl ${iconBg(selectedDetailDoc.mimeType)} shadow-sm`}>
                     <FileIcon mimeType={selectedDetailDoc.mimeType} className="h-6 w-6" />
                   </div>
-                  <DialogTitle className="truncate text-lg font-bold leading-tight text-zinc-900" title={selectedDetailDoc.name}>
+                  <DialogTitle className="truncate text-lg font-bold leading-tight text-zinc-900 dark:text-zinc-100" title={selectedDetailDoc.name}>
                     {selectedDetailDoc.name}
                   </DialogTitle>
-                  <DialogDescription className="text-xs text-zinc-400">
+                  <DialogDescription className="text-xs text-zinc-400 dark:text-zinc-500">
                     Document ID: {selectedDetailDoc.id}
                   </DialogDescription>
                 </DialogHeader>
 
-                <div className="mt-6 space-y-4 border-t border-zinc-100 pt-6 text-xs">
+                <div className="mt-6 space-y-4 border-t border-zinc-100 dark:border-zinc-800 pt-6 text-xs">
                   <div className="grid grid-cols-3 gap-3">
-                    <span className="font-medium text-zinc-400">File Type</span>
-                    <span className="col-span-2 break-all font-mono font-semibold uppercase text-zinc-800">
+                    <span className="font-medium text-zinc-400 dark:text-zinc-500">File Type</span>
+                    <span className="col-span-2 break-all font-mono font-semibold uppercase text-zinc-800 dark:text-zinc-200">
                       {selectedDetailDoc.sourceType === 'WEBSITE' || selectedDetailDoc.websiteUrl ? 'Website URL' : selectedDetailDoc.mimeType}
                     </span>
                   </div>
                   {(selectedDetailDoc.sourceType === 'WEBSITE' || selectedDetailDoc.websiteUrl) ? (
                     <div className="grid grid-cols-3 gap-3">
-                      <span className="font-medium text-zinc-400">Website URL</span>
+                      <span className="font-medium text-zinc-400 dark:text-zinc-500">Website URL</span>
                       <a
                         href={selectedDetailDoc.websiteUrl || selectedDetailDoc.s3Url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="col-span-2 break-all font-semibold text-zinc-900 underline underline-offset-4"
+                        className="col-span-2 break-all font-semibold text-zinc-900 dark:text-zinc-100 underline underline-offset-4"
                       >
                         {selectedDetailDoc.websiteUrl || selectedDetailDoc.s3Url}
                       </a>
                     </div>
                   ) : null}
                   <div className="grid grid-cols-3 gap-3">
-                    <span className="font-medium text-zinc-400">Source</span>
-                    <span className="col-span-2 font-semibold text-zinc-800">
+                    <span className="font-medium text-zinc-400 dark:text-zinc-500">Source</span>
+                    <span className="col-span-2 font-semibold text-zinc-800 dark:text-zinc-200">
                       {selectedDetailDoc.sourceType === 'WEBSITE' || selectedDetailDoc.websiteUrl ? 'Website Link' : 'Uploaded File'}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <span className="font-medium text-zinc-400">File Size</span>
-                    <span className="col-span-2 font-semibold text-zinc-800">
+                    <span className="font-medium text-zinc-400 dark:text-zinc-500">File Size</span>
+                    <span className="col-span-2 font-semibold text-zinc-800 dark:text-zinc-200">
                       {selectedDetailDoc.sourceType === 'WEBSITE' || selectedDetailDoc.websiteUrl ? 'External' : formatBytes(selectedDetailDoc.size)}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <span className="font-medium text-zinc-400">Status</span>
+                    <span className="font-medium text-zinc-400 dark:text-zinc-500">Status</span>
                     <span className="col-span-2">{getStatusBadge(selectedDetailDoc.status)}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <span className="font-medium text-zinc-400">Created Date</span>
-                    <span className="col-span-2 font-semibold text-zinc-800">{formatDate(selectedDetailDoc.createdAt)}</span>
+                    <span className="font-medium text-zinc-400 dark:text-zinc-500">Created Date</span>
+                    <span className="col-span-2 font-semibold text-zinc-800 dark:text-zinc-200">{formatDate(selectedDetailDoc.createdAt)}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <span className="font-medium text-zinc-400">Last Modified</span>
-                    <span className="col-span-2 font-semibold text-zinc-800">{formatDate(selectedDetailDoc.updatedAt)}</span>
+                    <span className="font-medium text-zinc-400 dark:text-zinc-500">Last Modified</span>
+                    <span className="col-span-2 font-semibold text-zinc-800 dark:text-zinc-200">{formatDate(selectedDetailDoc.updatedAt)}</span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <span className="font-medium text-zinc-400">Tags</span>
+                    <span className="font-medium text-zinc-400 dark:text-zinc-500">Tags</span>
                     <div className="col-span-2 flex flex-wrap gap-1">
-                      <span className="rounded bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold text-zinc-700">media</span>
-                      <span className="rounded bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold text-zinc-700">uploaded</span>
+                      <span className="rounded bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-700 dark:text-zinc-300">media</span>
+                      <span className="rounded bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-700 dark:text-zinc-300">uploaded</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 space-y-3 border-t border-zinc-100 pt-6">
+                <div className="mt-6 space-y-3 border-t border-zinc-100 dark:border-zinc-800 pt-6">
                   <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Asset Info</h4>
-                  <div className="space-y-2 rounded-xl border border-zinc-100 bg-zinc-50 p-3 text-[11px] leading-relaxed text-zinc-600">
+                  <div className="space-y-2 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-3 text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-300">
                     <p>Category: Media Asset</p>
                     <p>Asset URL: {selectedDetailDoc.websiteUrl || selectedDetailDoc.s3Url ? 'Available' : 'Unavailable'}</p>
                     <p>Content status: {selectedDetailDoc.status}</p>
                   </div>
                 </div>
 
-                <div className="mt-auto flex flex-col gap-2.5 border-t border-zinc-100 pt-6">
+                <div className="mt-auto flex flex-col gap-2.5 border-t border-zinc-100 dark:border-zinc-800 pt-6">
                   <a
                     href={selectedDetailDoc.websiteUrl || selectedDetailDoc.s3Url || '#'}
                     download={selectedDetailDoc.websiteUrl ? undefined : selectedDetailDoc.name}
@@ -1094,7 +1094,7 @@ export default function DocumentsDashboard() {
                     }}
                     target={selectedDetailDoc.websiteUrl ? '_blank' : undefined}
                     rel={selectedDetailDoc.websiteUrl ? 'noopener noreferrer' : undefined}
-                    className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-black py-2.5 text-xs font-semibold text-white shadow-md transition-all hover:bg-zinc-900"
+                    className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-black dark:bg-white py-2.5 text-xs font-semibold text-white dark:text-black shadow-md transition-all hover:bg-zinc-900 dark:hover:bg-zinc-200"
                   >
                     {selectedDetailDoc.websiteUrl ? <Globe2 className="h-4 w-4" /> : <Download className="h-4 w-4" />}
                     {selectedDetailDoc.websiteUrl ? 'Open Website' : 'Download Original File'}

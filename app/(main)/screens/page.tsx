@@ -163,29 +163,29 @@ export default function ScreensDashboard() {
 
   // Background: white at the top, light sea blue in the middle, dark blue at the bottom.
   return (
-    <div className="bg-[linear-gradient(to_top,#0a1f5c_0%,#1d4ed8_22%,#5cc8e0_52%,#d6f4fa_78%,#ffffff_100%)] min-h-screen py-10 px-8 flex flex-col gap-8 antialiased">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-100 pb-6 shrink-0">
+    <div className="bg-[linear-gradient(to_top,#0a1f5c_0%,#1d4ed8_22%,#5cc8e0_52%,#d6f4fa_78%,#ffffff_100%)] dark:bg-[linear-gradient(to_top,#020617_0%,#0f172a_50%,#1e293b_100%)] min-h-screen py-10 px-8 flex flex-col gap-8 antialiased">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-sky-100 dark:border-zinc-800 pb-6 shrink-0">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Screens</h1>
-          <p className="text-xs text-zinc-500 mt-1">Register and monitor display endpoints.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Screens</h1>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Register and monitor display endpoints.</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
-            <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-zinc-400 dark:text-zinc-500 absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder="Search screens..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-white border border-zinc-200 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-black w-60 transition-all shadow-sm"
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white w-60 transition-all shadow-sm"
             />
           </div>
 
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="bg-white border border-zinc-200 rounded-xl px-3 py-2 text-xs text-zinc-700 focus:outline-none focus:ring-2 focus:ring-black cursor-pointer shadow-sm"
+            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white cursor-pointer shadow-sm"
           >
             <option value="NEWEST">Newest Created</option>
             <option value="OLDEST">Oldest Created</option>
@@ -195,7 +195,7 @@ export default function ScreensDashboard() {
           <Button
             onClick={handleAddScreen}
             disabled={isCreating}
-            className="bg-black hover:bg-zinc-900 text-white font-semibold text-xs py-2 px-4 rounded-xl shadow-md cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+            className="bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-xs py-2 px-4 rounded-xl shadow-md cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
           >
             <PlusCircle className="w-3.5 h-3.5" /> Add Screen
           </Button>
@@ -203,21 +203,21 @@ export default function ScreensDashboard() {
       </header>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 gap-5 shrink-0">
-        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg">
+        <div className="bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md border border-white/70 dark:border-zinc-800 shadow-blue-950/10 dark:shadow-black/40 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Total Screens</span>
             <Monitor className="w-4 h-4 text-zinc-500" />
           </div>
-          <h3 className="text-2xl font-extrabold text-zinc-900 leading-none">{screens.length}</h3>
+          <h3 className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 leading-none">{screens.length}</h3>
           <p className="text-[10px] text-zinc-400">Registered displays</p>
         </div>
 
-        <div className="bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg">
+        <div className="bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md border border-white/70 dark:border-zinc-800 shadow-blue-950/10 dark:shadow-black/40 p-4 rounded-2xl flex flex-col gap-2.5 shadow-lg">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-bold uppercase tracking-wider">Recently Added</span>
             <Clock className="w-4 h-4 text-zinc-500" />
           </div>
-          <h3 className="text-2xl font-extrabold text-zinc-900 leading-none">
+          <h3 className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 leading-none">
             {screens.filter((screen) => Date.now() - new Date(screen.createdAt).getTime() <= 24 * 60 * 60 * 1000).length}
           </h3>
           <p className="text-[10px] text-zinc-400">Created in the last 24 hours</p>
@@ -235,7 +235,7 @@ export default function ScreensDashboard() {
                 <Trash2 className="w-3.5 h-3.5" /> Delete Selected
               </button>
             </DialogTrigger>
-            <DialogContent className="bg-white rounded-2xl p-6">
+            <DialogContent className="bg-white dark:bg-zinc-950 rounded-2xl p-6">
               <DialogHeader>
                 <DialogTitle>Confirm Bulk Deletion</DialogTitle>
                 <DialogDescription>
@@ -251,7 +251,7 @@ export default function ScreensDashboard() {
         </div>
       )}
 
-      <section className="flex-1 bg-white/85 backdrop-blur-md border border-white/70 shadow-blue-950/10 rounded-2xl shadow-lg overflow-hidden flex flex-col">
+      <section className="flex-1 bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md border border-white/70 dark:border-zinc-800 shadow-blue-950/10 dark:shadow-black/40 rounded-2xl shadow-lg overflow-hidden flex flex-col">
         {loading ? (
           <div className="p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, idx) => (
@@ -260,20 +260,20 @@ export default function ScreensDashboard() {
           </div>
         ) : filteredScreens.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
-            <div className="w-16 h-16 rounded-full bg-zinc-50 border border-zinc-100 flex items-center justify-center mb-4">
-              <Monitor className="w-8 h-8 text-zinc-400" />
+            <div className="w-16 h-16 rounded-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 flex items-center justify-center mb-4">
+              <Monitor className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
             </div>
-            <h3 className="text-sm font-bold text-zinc-800">No screens found</h3>
+            <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-100">No screens found</h3>
             <p className="text-xs text-zinc-400 max-w-xs mt-1 leading-relaxed">
               Create a screen to start tracking display endpoints.
             </p>
-            <Button onClick={handleAddScreen} className="mt-6 bg-black hover:bg-zinc-900 text-white font-semibold text-xs py-2 px-5 rounded-xl cursor-pointer">
+            <Button onClick={handleAddScreen} className="mt-6 bg-black dark:bg-white hover:bg-zinc-900 dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-xs py-2 px-5 rounded-xl cursor-pointer">
               Add Screen
             </Button>
           </div>
         ) : (
           <Table>
-            <TableHeader className="bg-zinc-50 border-b border-zinc-100">
+            <TableHeader className="bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800">
               <TableRow>
                 <TableHead className="w-12 text-center">
                   <input
@@ -283,10 +283,10 @@ export default function ScreensDashboard() {
                     className="w-3.5 h-3.5 accent-black rounded cursor-pointer mt-1"
                   />
                 </TableHead>
-                <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Screen Name</TableHead>
-                <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Assigned Asset</TableHead>
-                <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4">Created Date</TableHead>
-                <TableHead className="text-xs font-bold text-zinc-500 uppercase tracking-widest p-4 text-right">Actions</TableHead>
+                <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4">Screen Name</TableHead>
+                <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4">Assigned Asset</TableHead>
+                <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4">Created Date</TableHead>
+                <TableHead className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest p-4 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -294,7 +294,7 @@ export default function ScreensDashboard() {
                 const isSelected = selectedIds.includes(screen.id)
                 const assignedAsset = screen.assets?.[0]?.document
                 return (
-                  <TableRow key={screen.id} className={isSelected ? 'bg-zinc-50/80' : ''}>
+                  <TableRow key={screen.id} className={`border-b border-zinc-50 dark:border-zinc-800/50 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors ${isSelected ? 'bg-zinc-50/80 dark:bg-zinc-800/50' : ''}`}>
                     <TableCell className="text-center">
                       <input
                         type="checkbox"
@@ -303,7 +303,7 @@ export default function ScreensDashboard() {
                         className="w-3.5 h-3.5 accent-black rounded cursor-pointer"
                       />
                     </TableCell>
-                    <TableCell className="p-4 font-semibold text-zinc-800 text-xs">
+                    <TableCell className="p-4 font-semibold text-zinc-800 dark:text-zinc-100 text-xs">
                       <div className="flex items-center gap-2">
                         <Monitor className="w-4 h-4 text-zinc-500" />
                         <span>{screen.name}</span>
@@ -312,23 +312,23 @@ export default function ScreensDashboard() {
                     <TableCell className="p-4 text-xs">
                       {assignedAsset ? (
                         <div className="flex min-w-0 flex-col gap-1">
-                          <span className="max-w-[260px] truncate font-semibold text-zinc-800" title={assignedAsset.name}>
+                          <span className="max-w-[260px] truncate font-semibold text-zinc-800 dark:text-zinc-100" title={assignedAsset.name}>
                             {assignedAsset.name}
                           </span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                             {assignedAsset.sourceType === 'WEBSITE' || assignedAsset.websiteUrl ? 'Website' : assignedAsset.mimeType}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-xs font-medium text-zinc-400">Nothing</span>
+                        <span className="text-xs font-medium text-zinc-400 dark:text-zinc-500">Nothing</span>
                       )}
                     </TableCell>
-                    <TableCell className="p-4 text-xs text-zinc-500">{formatDate(screen.createdAt)}</TableCell>
+                    <TableCell className="p-4 text-xs text-zinc-500 dark:text-zinc-400">{formatDate(screen.createdAt)}</TableCell>
                     <TableCell className="p-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => setSelectedDetailScreen(screen)}
-                          className="p-2 text-zinc-500 hover:text-black hover:bg-zinc-100 rounded-lg transition-all cursor-pointer"
+                          className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-all cursor-pointer"
                           aria-label={`View ${screen.name}`}
                           title="Screen info"
                         >
@@ -336,7 +336,7 @@ export default function ScreensDashboard() {
                         </button>
                         <button
                           onClick={() => window.open(`/view/screen/${screen.id}`, '_blank', 'noopener,noreferrer')}
-                          className="p-2 text-zinc-500 hover:text-black hover:bg-zinc-100 rounded-lg transition-all cursor-pointer"
+                          className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-all cursor-pointer"
                           aria-label={`Open ${screen.name}`}
                           title="Open screen URL"
                         >
@@ -344,7 +344,7 @@ export default function ScreensDashboard() {
                         </button>
                         <button
                           onClick={() => setDeleteConfirmId(screen.id)}
-                          className="p-2 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all cursor-pointer"
+                          className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950 rounded-lg transition-all cursor-pointer"
                           aria-label={`Delete ${screen.name}`}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -360,7 +360,7 @@ export default function ScreensDashboard() {
       </section>
 
       <Dialog open={deleteConfirmId !== null} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
-        <DialogContent className="bg-white rounded-2xl p-6">
+        <DialogContent className="bg-white dark:bg-zinc-950 rounded-2xl p-6">
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
@@ -380,26 +380,26 @@ export default function ScreensDashboard() {
       </Dialog>
 
       <Sheet open={selectedDetailScreen !== null} onOpenChange={(open) => !open && setSelectedDetailScreen(null)}>
-        <SheetContent className="sm:max-w-md bg-white p-6 overflow-y-auto shadow-2xl flex flex-col gap-6">
+        <SheetContent className="sm:max-w-md bg-white dark:bg-zinc-950 p-6 overflow-y-auto shadow-2xl flex flex-col gap-6">
           {selectedDetailScreen && (
             <>
-              <SheetHeader className="border-b border-zinc-100 pb-4">
-                <SheetTitle className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-                  <Monitor className="w-5 h-5 text-black" />
+              <SheetHeader className="border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                <SheetTitle className="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                  <Monitor className="w-5 h-5 text-black dark:text-white" />
                   {selectedDetailScreen.name}
                 </SheetTitle>
-                <SheetDescription className="text-xs text-zinc-400">
+                <SheetDescription className="text-xs text-zinc-400 dark:text-zinc-500">
                   Screen registration details.
                 </SheetDescription>
               </SheetHeader>
               <div className="space-y-4 text-xs">
                 <div className="grid grid-cols-3 gap-3">
-                  <span className="text-zinc-400 font-medium">Created</span>
-                  <span className="col-span-2 text-zinc-800 font-semibold">{formatDate(selectedDetailScreen.createdAt)}</span>
+                  <span className="text-zinc-400 dark:text-zinc-500 font-medium">Created</span>
+                  <span className="col-span-2 text-zinc-800 dark:text-zinc-100 font-semibold">{formatDate(selectedDetailScreen.createdAt)}</span>
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  <span className="text-zinc-400 font-medium">Updated</span>
-                  <span className="col-span-2 text-zinc-800 font-semibold">{formatDate(selectedDetailScreen.updatedAt)}</span>
+                  <span className="text-zinc-400 dark:text-zinc-500 font-medium">Updated</span>
+                  <span className="col-span-2 text-zinc-800 dark:text-zinc-100 font-semibold">{formatDate(selectedDetailScreen.updatedAt)}</span>
                 </div>
               </div>
             </>
