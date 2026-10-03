@@ -48,8 +48,8 @@ export default function AppSidebar({ onNavigate }: AppSidebarProps) {
   const pathname = usePathname()
 
   return (
-    <aside className="flex h-full w-full flex-col bg-white text-zinc-950">
-      <div className="flex h-16 items-center border-b border-zinc-200 px-5">
+    <aside className="flex h-full w-full flex-col bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
+      <div className="flex h-16 items-center border-b border-zinc-200 dark:border-zinc-800 px-5">
         <BrandLogo size="sm" />
       </div>
 
@@ -66,8 +66,8 @@ export default function AppSidebar({ onNavigate }: AppSidebarProps) {
               className={cn(
                 "flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition-colors",
                 isActive
-                  ? "bg-black text-white shadow-sm"
-                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950"
+                  ? "bg-black text-white shadow-sm dark:bg-zinc-800 dark:text-zinc-50"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-50"
               )}
             >
               <Icon className="size-4" />
@@ -77,10 +77,10 @@ export default function AppSidebar({ onNavigate }: AppSidebarProps) {
         })}
       </nav>
 
-      <div className="space-y-3 border-t border-zinc-200 p-4">
-        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-          <p className="text-xs font-bold text-zinc-900">Media workspace</p>
-          <p className="mt-1 text-xs leading-5 text-zinc-500">
+      <div className="space-y-3 border-t border-zinc-200 dark:border-zinc-800 p-4">
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 p-3">
+          <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Media workspace</p>
+          <p className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
             Manage uploads, documents, and connected displays.
           </p>
         </div>
