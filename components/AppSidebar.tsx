@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
+  Download,
   FileText,
   LayoutDashboard,
   Monitor,
@@ -78,6 +79,14 @@ export default function AppSidebar({ onNavigate }: AppSidebarProps) {
       </nav>
 
       <div className="space-y-3 border-t border-zinc-200 dark:border-zinc-800 p-4">
+        <a
+          href="/ScreenPlayer.exe"
+          download
+          className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700 transition-colors shadow-sm"
+        >
+          <Download className="size-4" />
+          <span>Download Desktop App</span>
+        </a>
         <div className="rounded-lg border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 p-3">
           <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Media workspace</p>
           <p className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">

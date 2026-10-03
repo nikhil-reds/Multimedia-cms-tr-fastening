@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Clock, ExternalLink, Info, Monitor, PlusCircle, Search, Trash2 } from 'lucide-react'
+import { Clock, Copy, ExternalLink, Info, Monitor, PlusCircle, Search, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -159,6 +159,11 @@ export default function ScreensDashboard() {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((selectedId) => selectedId !== id) : [...prev, id]
     )
+  }
+
+  const handleCopyId = (id: string) => {
+    navigator.clipboard.writeText(id)
+    toast.success('Screen ID copied to clipboard')
   }
 
   // Background: white at the top, light sea blue in the middle, dark blue at the bottom.
@@ -341,6 +346,14 @@ export default function ScreensDashboard() {
                           title="Open screen URL"
                         >
                           <ExternalLink className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleCopyId(screen.id)}
+                          className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-all cursor-pointer"
+                          aria-label={`Copy ID for ${screen.name}`}
+                          title="Copy Screen ID"
+                        >
+                          <Copy className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeleteConfirmId(screen.id)}
