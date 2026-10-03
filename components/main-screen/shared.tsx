@@ -48,11 +48,11 @@ export function FileIcon({ mimeType, className = 'w-7 h-7' }: { mimeType: string
 }
 
 export function iconBg(mimeType: string) {
-  if (mimeType.startsWith('image/')) return 'bg-blue-50'
-  if (mimeType === 'application/pdf') return 'bg-red-50'
-  if (mimeType.startsWith('video/')) return 'bg-purple-50'
-  if (mimeType.startsWith('audio/')) return 'bg-green-50'
-  return 'bg-gray-100'
+  if (mimeType.startsWith('image/')) return 'bg-blue-50 dark:bg-blue-950/50'
+  if (mimeType === 'application/pdf') return 'bg-red-50 dark:bg-red-950/50'
+  if (mimeType.startsWith('video/')) return 'bg-purple-50 dark:bg-purple-950/50'
+  if (mimeType.startsWith('audio/')) return 'bg-green-50 dark:bg-green-950/50'
+  return 'bg-gray-100 dark:bg-zinc-800'
 }
 
 export type Document = {
@@ -72,11 +72,11 @@ export type SessionDetail = {
 }
 
 export const STATUS_COLORS: Record<string, string> = {
-  COMPLETED: 'bg-green-100 text-green-700',
-  UPLOADED: 'bg-green-100 text-green-700',
-  FAILED: 'bg-red-100 text-red-700',
-  UPLOADING: 'bg-yellow-100 text-yellow-700',
-  PENDING: 'bg-gray-100 text-gray-500',
+  COMPLETED: 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400',
+  UPLOADED: 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400',
+  FAILED: 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400',
+  UPLOADING: 'bg-yellow-100 dark:bg-yellow-950/50 text-yellow-700 dark:text-yellow-400',
+  PENDING: 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400',
 }
 
 export function formatBytes(bytes: number) {
@@ -98,7 +98,7 @@ export function formatDate(iso: string) {
 export function StatusBadge({ status }: { status: string }) {
   return (
     <span
-      className={`text-xs px-1.5 py-0.5 rounded font-medium ${STATUS_COLORS[status] ?? 'bg-gray-100 text-gray-500'}`}
+      className={`text-xs px-1.5 py-0.5 rounded font-medium ${STATUS_COLORS[status] ?? 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400'}`}
     >
       {status}
     </span>
