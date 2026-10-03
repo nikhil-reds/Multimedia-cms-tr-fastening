@@ -52,7 +52,7 @@ export default function LogoutButton() {
         type="button"
         onClick={handleLogout}
         disabled={signingOut}
-        className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm font-semibold text-zinc-600 transition-colors hover:bg-rose-50 hover:text-rose-600 disabled:opacity-60"
+        className="flex h-10 w-full justify-center items-center gap-3 rounded-lg px-3 text-sm font-semibold bg-red-600 text-white transition-colors hover:bg-red-700 disabled:opacity-60"
       >
         {signingOut ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
         <span>{signingOut ? "Logging out…" : "Log out"}</span>
