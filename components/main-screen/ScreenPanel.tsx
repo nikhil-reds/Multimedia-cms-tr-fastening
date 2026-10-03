@@ -72,13 +72,13 @@ function AssetPreview({ document }: { document: DocumentAsset }) {
 
   if (document.sourceType === 'WEBSITE' || document.websiteUrl) {
     return (
-      <div className="relative h-full w-full overflow-hidden bg-white">
+      <div className="relative h-full w-full overflow-hidden bg-white dark:bg-zinc-950">
         {/* Shown underneath in case the site refuses to be framed. */}
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
-          <div className="flex size-12 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-zinc-200">
-            <Globe2 className="size-6 text-zinc-700" />
+          <div className="flex size-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-800">
+            <Globe2 className="size-6 text-zinc-700 dark:text-zinc-300" />
           </div>
-          <p className="line-clamp-2 text-xs font-semibold text-zinc-700">{document.name}</p>
+          <p className="line-clamp-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300">{document.name}</p>
         </div>
         {/* Render at 4x size and scale down so the card shows a desktop-width thumbnail.
             pointer-events-none keeps drag events on the card instead of the iframe. */}
@@ -108,7 +108,7 @@ function AssetPreview({ document }: { document: DocumentAsset }) {
   return (
     <div className={`flex h-full w-full flex-col items-center justify-center gap-2 p-4 text-center ${iconBg(document.mimeType)}`}>
       <FileIcon mimeType={document.mimeType} className="size-10" />
-      <p className="line-clamp-2 text-xs font-semibold text-zinc-700">{document.name}</p>
+      <p className="line-clamp-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300">{document.name}</p>
     </div>
   )
 }
@@ -315,15 +315,15 @@ export default function ScreenPanel() {
   }
 
   return (
-    <section className="flex-1 rounded-2xl bg-white/85 backdrop-blur-md border border-white/70 shadow-lg shadow-blue-950/10 flex flex-col overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-100 shrink-0 flex items-center justify-between">
-        <h2 className="text-xs font-semibold text-gray-400 tracking-widest uppercase">
+    <section className="flex-1 rounded-2xl bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md border border-white/70 dark:border-zinc-800 shadow-lg shadow-blue-950/10 dark:shadow-black/40 flex flex-col overflow-hidden">
+      <div className="px-5 py-4 border-b border-gray-100 dark:border-zinc-800 shrink-0 flex items-center justify-between">
+        <h2 className="text-xs font-semibold text-gray-400 dark:text-zinc-500 tracking-widest uppercase">
           Screens
         </h2>
         <button
           onClick={addScreen}
           disabled={isCreating}
-          className="flex items-center gap-1.5 text-xs font-semibold text-white bg-black hover:bg-zinc-800 disabled:opacity-50 px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
+          className="flex items-center gap-1.5 text-xs font-semibold text-white dark:text-black bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-50 px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
         >
           <Plus className="size-3.5" />
           Add Screen
@@ -334,7 +334,7 @@ export default function ScreenPanel() {
         {loading ? (
           <ScreenGridSkeleton />
         ) : screens.length === 0 ? (
-          <div className="h-full min-h-64 flex flex-col items-center justify-center text-center text-gray-400 gap-3">
+          <div className="h-full min-h-64 flex flex-col items-center justify-center text-center text-gray-400 dark:text-zinc-500 gap-3">
             <Monitor className="size-10" />
             <p className="text-sm font-medium">No screens registered.</p>
             <p className="text-xs">Add a screen to track display endpoints.</p>
@@ -359,34 +359,34 @@ export default function ScreenPanel() {
                     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragOverId(null)
                   }}
                   onDrop={(event) => handleDrop(event, screen.id)}
-                  className={`group relative aspect-square overflow-hidden rounded-2xl border bg-zinc-50 transition-all ${
+                  className={`group relative aspect-square overflow-hidden rounded-2xl border bg-zinc-50 dark:bg-zinc-900 transition-all ${
                     isActiveDrop
-                      ? 'border-black ring-4 ring-black/10'
-                      : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                      ? 'border-black dark:border-white ring-4 ring-black/10 dark:ring-white/10'
+                      : 'border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600 hover:shadow-sm'
                   }`}
                 >
                   <div className="absolute inset-0">
                     {latestAsset ? (
                       <AssetPreview key={latestAsset.id + latestAsset.documentId} document={latestAsset.document} />
                     ) : (
-                      <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-6 text-center text-gray-400">
+                      <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-6 text-center text-gray-400 dark:text-zinc-500">
                         <Monitor className="size-12" />
                         <p className="text-xs font-medium">Drop a document, photo or link here</p>
                       </div>
                     )}
                   </div>
 
-                  <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-white/95 to-white/0 p-4">
+                  <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-white/95 dark:from-zinc-900/95 to-white/0 dark:to-zinc-900/0 p-4">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-zinc-950">{screen.name}</p>
-                      <p className="text-xs font-medium text-zinc-500">
+                      <p className="truncate text-sm font-bold text-zinc-950 dark:text-zinc-100">{screen.name}</p>
+                      <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                         {latestAsset ? '1 asset assigned' : 'No asset assigned'}
                       </p>
                     </div>
                     <div className="flex shrink-0 gap-1">
                       <button
                         onClick={() => window.open(`/view/screen/${screen.id}`, '_blank', 'noopener,noreferrer')}
-                        className="flex size-8 items-center justify-center rounded-lg bg-white/90 text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:text-black"
+                        className="flex size-8 items-center justify-center rounded-lg bg-white/90 dark:bg-zinc-800/90 text-zinc-500 dark:text-zinc-400 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700 transition hover:text-black dark:hover:text-white"
                         aria-label={`Open ${screen.name}`}
                         title="Open screen URL"
                       >
@@ -394,7 +394,7 @@ export default function ScreenPanel() {
                       </button>
                       <button
                         onClick={() => removeScreen(screen.id)}
-                        className="flex size-8 items-center justify-center rounded-lg bg-white/90 text-zinc-400 shadow-sm ring-1 ring-zinc-200 transition hover:bg-rose-50 hover:text-rose-600"
+                        className="flex size-8 items-center justify-center rounded-lg bg-white/90 dark:bg-zinc-800/90 text-zinc-400 dark:text-zinc-500 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700 transition hover:bg-rose-50 dark:hover:bg-rose-950 hover:text-rose-600 dark:hover:text-rose-400"
                         aria-label={`Remove ${screen.name}`}
                         title="Remove screen"
                       >
@@ -404,13 +404,13 @@ export default function ScreenPanel() {
                   </div>
 
                   {isActiveDrop ? (
-                    <div className="absolute inset-3 flex items-center justify-center rounded-xl border-2 border-dashed border-black bg-white/80 text-xs font-bold text-zinc-900">
+                    <div className="absolute inset-3 flex items-center justify-center rounded-xl border-2 border-dashed border-black dark:border-white bg-white/80 dark:bg-zinc-900/80 text-xs font-bold text-zinc-900 dark:text-zinc-100">
                       Drop to assign
                     </div>
                   ) : null}
 
                   {assigningId === screen.id ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/80 text-xs font-bold text-zinc-900">
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-zinc-900/80 text-xs font-bold text-zinc-900 dark:text-zinc-100">
                       Saving...
                     </div>
                   ) : null}
