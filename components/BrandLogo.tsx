@@ -33,17 +33,14 @@ export default function BrandLogo({ tone = "dark", size = "md", className }: Bra
           className="h-full w-full object-contain"
         />
       </div>
-      <div className="min-w-0">
+      <div className="min-w-0 flex flex-col justify-center h-full">
         <p
           className={cn(
-            "truncate font-bold leading-5",
-            isSmall ? "text-sm" : "text-base",
-            isLight ? "text-white" : "text-zinc-950"
+            "truncate font-bold",
+            isSmall ? "text-base" : "text-lg",
+            isLight ? "text-white" : "text-zinc-950 dark:text-zinc-100"
           )}
         >
-          TR Fastenings
-        </p>
-        <p className={cn("truncate text-xs font-medium", isLight ? "text-white/60" : "text-zinc-500")}>
           Multimedia Console
         </p>
       </div>
