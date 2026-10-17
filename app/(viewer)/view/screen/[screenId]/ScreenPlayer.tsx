@@ -1,6 +1,7 @@
 'use client'
 
-import { FileText, Maximize2, Monitor } from 'lucide-react'
+import { FileText, Maximize2, Monitor, Pause, Play, Volume2, VolumeX } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import CloseButton from '../../[docId]/CloseButton'
 
 type ScreenAsset = {
@@ -22,7 +23,17 @@ type ScreenPlayerProps = {
   kiosk?: boolean
 }
 
-function AssetStage({ asset, kiosk }: { asset: ScreenAsset; kiosk: boolean }) {
+type MediaElement = HTMLVideoElement | HTMLAudioElement
+
+function AssetStage({
+  asset,
+  kiosk,
+  onMediaElement,
+}: {
+  asset: ScreenAsset
+  kiosk: boolean
+  onMediaElement: (element: MediaElement | null) => void
+}) {
   const document = asset.document
   const url = document.websiteUrl || document.s3Url
 
@@ -31,7 +42,17 @@ function AssetStage({ asset, kiosk }: { asset: ScreenAsset; kiosk: boolean }) {
   }
 
   if (document.mimeType.startsWith('video/')) {
-    return <video src={url} className="h-full w-full bg-black object-contain" controls={!kiosk} autoPlay muted loop />
+    return (
+      <video
+        ref={onMediaElement}
+        src={url}
+        className="h-full w-full bg-black object-contain"
+        controls={!kiosk}
+        autoPlay
+        muted
+        loop
+      />
+    )
   }
 
   if (document.sourceType === 'WEBSITE' || document.websiteUrl) {
@@ -43,7 +64,7 @@ function AssetStage({ asset, kiosk }: { asset: ScreenAsset; kiosk: boolean }) {
       <div className="flex h-full w-full flex-col items-center justify-center gap-5 bg-zinc-950 p-8 text-white">
         <FileText className="size-16 text-white/40" />
         <p className="max-w-xl text-center text-lg font-bold">{document.name}</p>
-        <audio src={url} controls={!kiosk} autoPlay loop className="w-full max-w-xl" />
+        <audio ref={onMediaElement} src={url} controls={!kiosk} autoPlay loop className="w-full max-w-xl" />
       </div>
     )
   }
@@ -70,6 +91,62 @@ function AssetStage({ asset, kiosk }: { asset: ScreenAsset; kiosk: boolean }) {
 
 export default function ScreenPlayer({ screenName, assets, kiosk = false }: ScreenPlayerProps) {
   const firstAsset = assets[0]
+  const mediaElementRef = useRef<MediaElement | null>(null)
+  const [hasMediaElement, setHasMediaElement] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
+
+  const isPlayableMedia = Boolean(
+    firstAsset &&
+      (firstAsset.document.mimeType.startsWith('video/') || firstAsset.document.mimeType.startsWith('audio/')),
+  )
+
+  const handleMediaElement = useCallback((element: MediaElement | null) => {
+    mediaElementRef.current = element
+    setHasMediaElement(Boolean(element))
+    setIsPlaying(Boolean(element && !element.paused && !element.ended))
+    setIsMuted(Boolean(element?.muted))
+  }, [])
+
+  useEffect(() => {
+    const mediaElement = mediaElementRef.current
+    if (!mediaElement) return
+
+    const syncState = () => {
+      setIsPlaying(!mediaElement.paused && !mediaElement.ended)
+      setIsMuted(mediaElement.muted)
+    }
+
+    syncState()
+    mediaElement.addEventListener('play', syncState)
+    mediaElement.addEventListener('pause', syncState)
+    mediaElement.addEventListener('ended', syncState)
+    mediaElement.addEventListener('volumechange', syncState)
+
+    return () => {
+      mediaElement.removeEventListener('play', syncState)
+      mediaElement.removeEventListener('pause', syncState)
+      mediaElement.removeEventListener('ended', syncState)
+      mediaElement.removeEventListener('volumechange', syncState)
+    }
+  }, [hasMediaElement])
+
+  function togglePlay() {
+    const mediaElement = mediaElementRef.current
+    if (!mediaElement) return
+    if (mediaElement.paused || mediaElement.ended) {
+      mediaElement.play().catch(() => setIsPlaying(false))
+    } else {
+      mediaElement.pause()
+    }
+  }
+
+  function toggleMute() {
+    const mediaElement = mediaElementRef.current
+    if (!mediaElement) return
+    mediaElement.muted = !mediaElement.muted
+    setIsMuted(mediaElement.muted)
+  }
 
   function enterFullscreen() {
     const target = document.documentElement
@@ -97,6 +174,28 @@ export default function ScreenPlayer({ screenName, assets, kiosk = false }: Scre
 
   return (
     <div className="relative h-screen bg-black text-white">
+      {kiosk && isPlayableMedia && hasMediaElement && (
+        <div className="absolute bottom-4 left-4 z-30 flex items-center gap-2 rounded-xl bg-black/70 p-2 shadow-lg ring-1 ring-white/15 backdrop-blur">
+          <button
+            type="button"
+            onClick={togglePlay}
+            className="flex size-10 items-center justify-center rounded-lg text-white/85 transition hover:bg-white/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/70"
+            aria-label={isPlaying ? 'Pause media' : 'Play media'}
+            title={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? <Pause className="size-5" /> : <Play className="size-5" />}
+          </button>
+          <button
+            type="button"
+            onClick={toggleMute}
+            className="flex size-10 items-center justify-center rounded-lg text-white/85 transition hover:bg-white/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/70"
+            aria-label={isMuted ? 'Unmute media' : 'Mute media'}
+            title={isMuted ? 'Unmute' : 'Mute'}
+          >
+            {isMuted ? <VolumeX className="size-5" /> : <Volume2 className="size-5" />}
+          </button>
+        </div>
+      )}
       {!kiosk && (
         <div className="absolute right-4 top-4 z-20 flex items-center gap-2">
           <button
@@ -109,7 +208,7 @@ export default function ScreenPlayer({ screenName, assets, kiosk = false }: Scre
           </button>
         </div>
       )}
-      <AssetStage asset={firstAsset} kiosk={kiosk} />
+      <AssetStage asset={firstAsset} kiosk={kiosk} onMediaElement={handleMediaElement} />
     </div>
   )
 }
