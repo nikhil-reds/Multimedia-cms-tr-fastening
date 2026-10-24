@@ -289,6 +289,8 @@ docker compose up -d
 
 An Electron kiosk app that plays a screen's assigned content full screen on a Windows PC.
 
+Website links requesting a new tab or window open inside the player. Use the persistent **Back** button at the bottom right to return through visited pages, including navigation inside embedded websites. The button is disabled at the beginning of the screen's history; assigning or reloading a screen starts a fresh history.
+
 **Flow:** open the `.exe` → full screen → Screen ID modal → Submit → the screen's content plays (`/view/screen/<id>?kiosk=1`, which hides all player controls).
 
 | Key | Action |

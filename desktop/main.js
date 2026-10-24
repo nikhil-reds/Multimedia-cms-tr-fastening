@@ -10,6 +10,7 @@ const RETRY_DELAY_MS = 10_000
 let win = null
 let contentView = null
 let overlayView = null
+let navigationView = null
 let current = null // { serverUrl, screenId, signature }
 let pollTimer = null
 let retryTimer = null
@@ -73,7 +74,15 @@ async function fetchSignature(serverUrl, screenId) {
 function loadScreenPage() {
   clearTimeout(retryTimer)
   const { serverUrl, screenId } = current
-  contentView.webContents.loadURL(`${serverUrl}/view/screen/${encodeURIComponent(screenId)}?kiosk=1`)
+  const contents = contentView.webContents
+  contents.loadURL(`${serverUrl}/view/screen/${encodeURIComponent(screenId)}?kiosk=1`)
+    .then(() => {
+      // A newly assigned screen is the starting point for Back navigation.
+      if (contents.isDestroyed()) return
+      contents.navigationHistory.clear()
+      navigationView?.webContents.send('navigation:state', { canGoBack: false })
+    })
+    .catch(() => { /* did-fail-load schedules the retry. */ })
 }
 
 function startPolling() {
@@ -164,6 +173,7 @@ function layoutViews() {
   const bounds = { x: 0, y: 0, width, height }
   contentView.setBounds(bounds)
   overlayView.setBounds(bounds)
+  navigationView.setBounds({ x: Math.max(0, width - 112), y: Math.max(0, height - 56), width: 100, height: 44 })
 }
 
 function createWindow() {
@@ -194,17 +204,44 @@ function createWindow() {
   })
   overlayView.setBackgroundColor('#00000000')
 
+  navigationView = new WebContentsView({
+    webPreferences: {
+      preload: path.join(__dirname, 'navigation-preload.js'),
+      contextIsolation: true,
+      sandbox: true,
+    },
+  })
+  navigationView.setBackgroundColor('#00000000')
+
   // Added last = drawn on top.
   win.contentView.addChildView(contentView)
+  win.contentView.addChildView(navigationView)
   win.contentView.addChildView(overlayView)
   layoutViews()
   win.on('resize', layoutViews)
 
-  for (const wc of [contentView.webContents, overlayView.webContents]) {
+  for (const wc of [contentView.webContents, navigationView.webContents, overlayView.webContents]) {
     attachShortcuts(wc)
     // Keep everything inside the kiosk: no popups or new windows.
     wc.setWindowOpenHandler(() => ({ action: 'deny' }))
   }
+
+  // Sites often use target="_blank" or window.open, including inside iframes.
+  // Follow ordinary web links in the existing player so Back can return to it.
+  contentView.webContents.setWindowOpenHandler(({ url }) => {
+    if (/^https?:\/\//i.test(url)) contentView.webContents.loadURL(url)
+    return { action: 'deny' }
+  })
+
+  const updateNavigation = () => {
+    navigationView.webContents.send('navigation:state', {
+      canGoBack: Boolean(current) && contentView.webContents.navigationHistory.canGoBack(),
+    })
+  }
+  contentView.webContents.on('did-frame-navigate', updateNavigation)
+  contentView.webContents.on('did-navigate-in-page', updateNavigation)
+  contentView.webContents.on('did-stop-loading', updateNavigation)
+  navigationView.webContents.on('did-finish-load', updateNavigation)
 
   contentView.webContents.on('did-fail-load', (_event, errorCode, _description, _url, isMainFrame) => {
     // -3 is ERR_ABORTED (e.g. a new load replaced this one), not a real failure.
@@ -218,16 +255,26 @@ function createWindow() {
 
   contentView.webContents.loadURL('about:blank')
   overlayView.webContents.loadFile(path.join(__dirname, 'overlay.html'))
+  navigationView.webContents.loadFile(path.join(__dirname, 'navigation.html'))
   overlayView.webContents.once('did-finish-load', showOverlay)
 
   win.on('closed', () => {
     clearInterval(pollTimer)
     clearTimeout(retryTimer)
-    win = contentView = overlayView = null
+    for (const view of [contentView, navigationView, overlayView]) {
+      if (!view.webContents.isDestroyed()) view.webContents.close()
+    }
+    win = contentView = overlayView = navigationView = null
   })
 }
 
 ipcMain.handle('overlay:submit', (_event, payload) => openScreen(payload || {}))
+ipcMain.on('navigation:back', (event) => {
+  if (event.sender !== navigationView?.webContents || !current) return
+  const history = contentView.webContents.navigationHistory
+  if (history.canGoBack()) history.goBack()
+  contentView.webContents.focus()
+})
 ipcMain.on('overlay:cancel', () => {
   if (current) hideOverlay()
 })

@@ -23,6 +23,8 @@
     "files": [
       "main.js",
       "preload.js",
+      "navigation-preload.js",
+      "navigation.html",
       "overlay.html",
       "build-config.json",
       "package.json"
